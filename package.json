@@ -1,0 +1,29 @@
+{
+  "name": "rush-bracket",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name rush-bracket --commit-dirty=true"
+  },
+  "dependencies": {
+    "@fontsource/oswald": "^5.2.6",
+    "@fontsource/outfit": "^5.2.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.2",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.36.0"
+  }
+}

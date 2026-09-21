@@ -1,0 +1,1198 @@
+{
+  "version": 1,
+  "source": "MusicBrainz official studio releases and the Cover Art Archive. Live albums, compilations, and the Feedback covers EP are excluded.",
+  "albums": [
+    {
+      "id": "rush",
+      "title": "Rush",
+      "year": 1974,
+      "mbid": "ea47459b-a69e-3c15-8781-77227a78e1db",
+      "releaseMbid": "2ee701ef-e520-4ad3-b4c2-6fb5da8ce67b",
+      "cover": "/covers/rush.jpg",
+      "tracks": [
+        {
+          "index": 0,
+          "id": "rush-1",
+          "n": 1,
+          "title": "Finding My Way"
+        },
+        {
+          "index": 1,
+          "id": "rush-2",
+          "n": 2,
+          "title": "Need Some Love"
+        },
+        {
+          "index": 2,
+          "id": "rush-3",
+          "n": 3,
+          "title": "Take a Friend"
+        },
+        {
+          "index": 3,
+          "id": "rush-4",
+          "n": 4,
+          "title": "Here Again"
+        },
+        {
+          "index": 4,
+          "id": "rush-5",
+          "n": 5,
+          "title": "What You’re Doing"
+        },
+        {
+          "index": 5,
+          "id": "rush-6",
+          "n": 6,
+          "title": "In the Mood"
+        },
+        {
+          "index": 6,
+          "id": "rush-7",
+          "n": 7,
+          "title": "Before and After"
+        },
+        {
+          "index": 7,
+          "id": "rush-8",
+          "n": 8,
+          "title": "Working Man"
+        }
+      ]
+    },
+    {
+      "id": "fly-by-night",
+      "title": "Fly by Night",
+      "year": 1975,
+      "mbid": "0c6e24c8-3cc8-3b35-93c5-1fdf6c5641b6",
+      "releaseMbid": "0c0fabbf-0bb0-4cad-ac34-50a67cbbb3cd",
+      "cover": "/covers/fly-by-night.jpg",
+      "tracks": [
+        {
+          "index": 8,
+          "id": "fly-by-night-1",
+          "n": 1,
+          "title": "Anthem"
+        },
+        {
+          "index": 9,
+          "id": "fly-by-night-2",
+          "n": 2,
+          "title": "Best I Can"
+        },
+        {
+          "index": 10,
+          "id": "fly-by-night-3",
+          "n": 3,
+          "title": "Beneath, Between & Behind"
+        },
+        {
+          "index": 11,
+          "id": "fly-by-night-4",
+          "n": 4,
+          "title": "By-Tor & the Snow Dog",
+          "detail": "I. At the Tobes of Hades / II. Across the Styx / III. Of the Battle / IV. Epilogue"
+        },
+        {
+          "index": 12,
+          "id": "fly-by-night-5",
+          "n": 5,
+          "title": "Fly by Night"
+        },
+        {
+          "index": 13,
+          "id": "fly-by-night-6",
+          "n": 6,
+          "title": "Making Memories"
+        },
+        {
+          "index": 14,
+          "id": "fly-by-night-7",
+          "n": 7,
+          "title": "Rivendell"
+        },
+        {
+          "index": 15,
+          "id": "fly-by-night-8",
+          "n": 8,
+          "title": "In the End"
+        }
+      ]
+    },
+    {
+      "id": "caress-of-steel",
+      "title": "Caress of Steel",
+      "year": 1975,
+      "mbid": "a6044d81-743e-3a62-afdf-20bb943b2505",
+      "releaseMbid": "b8dcf7ad-fa48-4e97-bff6-7de708c7023e",
+      "cover": "/covers/caress-of-steel.jpg",
+      "tracks": [
+        {
+          "index": 16,
+          "id": "caress-of-steel-1",
+          "n": 1,
+          "title": "Bastille Day"
+        },
+        {
+          "index": 17,
+          "id": "caress-of-steel-2",
+          "n": 2,
+          "title": "I Think I’m Going Bald"
+        },
+        {
+          "index": 18,
+          "id": "caress-of-steel-3",
+          "n": 3,
+          "title": "Lakeside Park"
+        },
+        {
+          "index": 19,
+          "id": "caress-of-steel-4",
+          "n": 4,
+          "title": "The Necromancer",
+          "detail": "I. Into the Darkness / II. Under the Shadow / III. Return of the Prince"
+        },
+        {
+          "index": 20,
+          "id": "caress-of-steel-5",
+          "n": 5,
+          "title": "The Fountain of Lamneth",
+          "detail": "I. In the Valley / II. Didacts and Narpets / III. No One at the Bridge / IV. Panacea / V. Bacchus Plateau / VI. The Fountain"
+        }
+      ]
+    },
+    {
+      "id": "2112",
+      "title": "2112",
+      "year": 1976,
+      "mbid": "9243ac59-9390-37e1-abee-fcf31fb8035f",
+      "releaseMbid": "aeced1ff-13a6-32d8-a186-b181e413801d",
+      "cover": "/covers/2112.jpg",
+      "tracks": [
+        {
+          "index": 21,
+          "id": "2112-1",
+          "n": 1,
+          "title": "2112",
+          "detail": "I. Overture / II. The Temples of Syrinx / III. Discovery / IV. Presentation / V. Oracle: The Dream / VI. Soliloquy / VII. Grand Finale"
+        },
+        {
+          "index": 22,
+          "id": "2112-2",
+          "n": 2,
+          "title": "A Passage to Bangkok"
+        },
+        {
+          "index": 23,
+          "id": "2112-3",
+          "n": 3,
+          "title": "The Twilight Zone"
+        },
+        {
+          "index": 24,
+          "id": "2112-4",
+          "n": 4,
+          "title": "Lessons"
+        },
+        {
+          "index": 25,
+          "id": "2112-5",
+          "n": 5,
+          "title": "Tears"
+        },
+        {
+          "index": 26,
+          "id": "2112-6",
+          "n": 6,
+          "title": "Something for Nothing"
+        }
+      ]
+    },
+    {
+      "id": "a-farewell-to-kings",
+      "title": "A Farewell to Kings",
+      "year": 1977,
+      "mbid": "5f27a05d-a12a-3611-a836-f720c9ab00a2",
+      "releaseMbid": "cb04221d-e538-3241-b138-3745f024abc7",
+      "cover": "/covers/a-farewell-to-kings.jpg",
+      "tracks": [
+        {
+          "index": 27,
+          "id": "a-farewell-to-kings-1",
+          "n": 1,
+          "title": "A Farewell to Kings"
+        },
+        {
+          "index": 28,
+          "id": "a-farewell-to-kings-2",
+          "n": 2,
+          "title": "Xanadu"
+        },
+        {
+          "index": 29,
+          "id": "a-farewell-to-kings-3",
+          "n": 3,
+          "title": "Closer to the Heart"
+        },
+        {
+          "index": 30,
+          "id": "a-farewell-to-kings-4",
+          "n": 4,
+          "title": "Cinderella Man"
+        },
+        {
+          "index": 31,
+          "id": "a-farewell-to-kings-5",
+          "n": 5,
+          "title": "Madrigal"
+        },
+        {
+          "index": 32,
+          "id": "a-farewell-to-kings-6",
+          "n": 6,
+          "title": "Cygnus X-1, Book I: The Voyage"
+        }
+      ]
+    },
+    {
+      "id": "hemispheres",
+      "title": "Hemispheres",
+      "year": 1978,
+      "mbid": "484f8923-454e-3efa-8234-9d1b1f296cc8",
+      "releaseMbid": "a1795534-091b-3dae-b6aa-7ebd8280223f",
+      "cover": "/covers/hemispheres.jpg",
+      "tracks": [
+        {
+          "index": 33,
+          "id": "hemispheres-1",
+          "n": 1,
+          "title": "Cygnus X-1, Book II: Hemispheres",
+          "detail": "I. Prelude / II. Apollo: Bringer of Wisdom / III. Dionysus: Bringer of Love / IV. Armageddon: The Battle of Heart and Mind / V. Cygnus: Bringer of Balance / VI. The Sphere: A Kind of Dream"
+        },
+        {
+          "index": 34,
+          "id": "hemispheres-2",
+          "n": 2,
+          "title": "Circumstances"
+        },
+        {
+          "index": 35,
+          "id": "hemispheres-3",
+          "n": 3,
+          "title": "The Trees"
+        },
+        {
+          "index": 36,
+          "id": "hemispheres-4",
+          "n": 4,
+          "title": "La Villa Strangiato",
+          "detail": "An Exercise in Self-Indulgence"
+        }
+      ]
+    },
+    {
+      "id": "permanent-waves",
+      "title": "Permanent Waves",
+      "year": 1980,
+      "mbid": "664ffb4c-8178-3f99-b0d3-0bab3a51f793",
+      "releaseMbid": "072d1a24-cecb-4cd6-a780-ce0b508d6667",
+      "cover": "/covers/permanent-waves.jpg",
+      "tracks": [
+        {
+          "index": 37,
+          "id": "permanent-waves-1",
+          "n": 1,
+          "title": "The Spirit of Radio"
+        },
+        {
+          "index": 38,
+          "id": "permanent-waves-2",
+          "n": 2,
+          "title": "Freewill"
+        },
+        {
+          "index": 39,
+          "id": "permanent-waves-3",
+          "n": 3,
+          "title": "Jacob’s Ladder"
+        },
+        {
+          "index": 40,
+          "id": "permanent-waves-4",
+          "n": 4,
+          "title": "Entre Nous"
+        },
+        {
+          "index": 41,
+          "id": "permanent-waves-5",
+          "n": 5,
+          "title": "Different Strings"
+        },
+        {
+          "index": 42,
+          "id": "permanent-waves-6",
+          "n": 6,
+          "title": "Natural Science"
+        }
+      ]
+    },
+    {
+      "id": "moving-pictures",
+      "title": "Moving Pictures",
+      "year": 1981,
+      "mbid": "40e30dc1-55ac-33e1-85d3-1f1508140bfc",
+      "releaseMbid": "fecf8eef-cbb6-49b3-bc7d-b2912766cacc",
+      "cover": "/covers/moving-pictures.jpg",
+      "tracks": [
+        {
+          "index": 43,
+          "id": "moving-pictures-1",
+          "n": 1,
+          "title": "Tom Sawyer"
+        },
+        {
+          "index": 44,
+          "id": "moving-pictures-2",
+          "n": 2,
+          "title": "Red Barchetta"
+        },
+        {
+          "index": 45,
+          "id": "moving-pictures-3",
+          "n": 3,
+          "title": "YYZ"
+        },
+        {
+          "index": 46,
+          "id": "moving-pictures-4",
+          "n": 4,
+          "title": "Limelight"
+        },
+        {
+          "index": 47,
+          "id": "moving-pictures-5",
+          "n": 5,
+          "title": "The Camera Eye"
+        },
+        {
+          "index": 48,
+          "id": "moving-pictures-6",
+          "n": 6,
+          "title": "Witch Hunt",
+          "detail": "Part III of “Fear”"
+        },
+        {
+          "index": 49,
+          "id": "moving-pictures-7",
+          "n": 7,
+          "title": "Vital Signs"
+        }
+      ]
+    },
+    {
+      "id": "signals",
+      "title": "Signals",
+      "year": 1982,
+      "mbid": "63ebc338-a01b-398c-8520-fdb055fbcd7b",
+      "releaseMbid": "3fc90a63-fad4-3417-937c-80649f6ab059",
+      "cover": "/covers/signals.jpg",
+      "tracks": [
+        {
+          "index": 50,
+          "id": "signals-1",
+          "n": 1,
+          "title": "Subdivisions"
+        },
+        {
+          "index": 51,
+          "id": "signals-2",
+          "n": 2,
+          "title": "The Analog Kid"
+        },
+        {
+          "index": 52,
+          "id": "signals-3",
+          "n": 3,
+          "title": "Chemistry"
+        },
+        {
+          "index": 53,
+          "id": "signals-4",
+          "n": 4,
+          "title": "Digital Man"
+        },
+        {
+          "index": 54,
+          "id": "signals-5",
+          "n": 5,
+          "title": "The Weapon",
+          "detail": "Part II of “Fear”"
+        },
+        {
+          "index": 55,
+          "id": "signals-6",
+          "n": 6,
+          "title": "New World Man"
+        },
+        {
+          "index": 56,
+          "id": "signals-7",
+          "n": 7,
+          "title": "Losing It"
+        },
+        {
+          "index": 57,
+          "id": "signals-8",
+          "n": 8,
+          "title": "Countdown"
+        }
+      ]
+    },
+    {
+      "id": "grace-under-pressure",
+      "title": "Grace Under Pressure",
+      "year": 1984,
+      "mbid": "f9e8fa95-5c8f-31aa-8d5e-d9c849d88aba",
+      "releaseMbid": "2339f294-6a54-371a-ade3-7b1735c5b0af",
+      "cover": "/covers/grace-under-pressure.jpg",
+      "tracks": [
+        {
+          "index": 58,
+          "id": "grace-under-pressure-1",
+          "n": 1,
+          "title": "Distant Early Warning"
+        },
+        {
+          "index": 59,
+          "id": "grace-under-pressure-2",
+          "n": 2,
+          "title": "Afterimage"
+        },
+        {
+          "index": 60,
+          "id": "grace-under-pressure-3",
+          "n": 3,
+          "title": "Red Sector A"
+        },
+        {
+          "index": 61,
+          "id": "grace-under-pressure-4",
+          "n": 4,
+          "title": "The Enemy Within",
+          "detail": "Part I of “Fear”"
+        },
+        {
+          "index": 62,
+          "id": "grace-under-pressure-5",
+          "n": 5,
+          "title": "The Body Electric"
+        },
+        {
+          "index": 63,
+          "id": "grace-under-pressure-6",
+          "n": 6,
+          "title": "Kid Gloves"
+        },
+        {
+          "index": 64,
+          "id": "grace-under-pressure-7",
+          "n": 7,
+          "title": "Red Lenses"
+        },
+        {
+          "index": 65,
+          "id": "grace-under-pressure-8",
+          "n": 8,
+          "title": "Between the Wheels"
+        }
+      ]
+    },
+    {
+      "id": "power-windows",
+      "title": "Power Windows",
+      "year": 1985,
+      "mbid": "e8864dda-f0db-3a7c-a09c-b57314e4b910",
+      "releaseMbid": "24185878-ac35-4aec-9889-f8511eeca29a",
+      "cover": "/covers/power-windows.jpg",
+      "tracks": [
+        {
+          "index": 66,
+          "id": "power-windows-1",
+          "n": 1,
+          "title": "The Big Money"
+        },
+        {
+          "index": 67,
+          "id": "power-windows-2",
+          "n": 2,
+          "title": "Grand Designs"
+        },
+        {
+          "index": 68,
+          "id": "power-windows-3",
+          "n": 3,
+          "title": "Manhattan Project"
+        },
+        {
+          "index": 69,
+          "id": "power-windows-4",
+          "n": 4,
+          "title": "Marathon"
+        },
+        {
+          "index": 70,
+          "id": "power-windows-5",
+          "n": 5,
+          "title": "Territories"
+        },
+        {
+          "index": 71,
+          "id": "power-windows-6",
+          "n": 6,
+          "title": "Middletown Dreams"
+        },
+        {
+          "index": 72,
+          "id": "power-windows-7",
+          "n": 7,
+          "title": "Emotion Detector"
+        },
+        {
+          "index": 73,
+          "id": "power-windows-8",
+          "n": 8,
+          "title": "Mystic Rhythms"
+        }
+      ]
+    },
+    {
+      "id": "hold-your-fire",
+      "title": "Hold Your Fire",
+      "year": 1987,
+      "mbid": "bd4abba9-8016-3d05-81e2-120cd051b436",
+      "releaseMbid": "d7b5d28c-d68c-4e12-b2e9-90c0f9d1db06",
+      "cover": "/covers/hold-your-fire.jpg",
+      "tracks": [
+        {
+          "index": 74,
+          "id": "hold-your-fire-1",
+          "n": 1,
+          "title": "Force Ten"
+        },
+        {
+          "index": 75,
+          "id": "hold-your-fire-2",
+          "n": 2,
+          "title": "Time Stand Still"
+        },
+        {
+          "index": 76,
+          "id": "hold-your-fire-3",
+          "n": 3,
+          "title": "Open Secrets"
+        },
+        {
+          "index": 77,
+          "id": "hold-your-fire-4",
+          "n": 4,
+          "title": "Second Nature"
+        },
+        {
+          "index": 78,
+          "id": "hold-your-fire-5",
+          "n": 5,
+          "title": "Prime Mover"
+        },
+        {
+          "index": 79,
+          "id": "hold-your-fire-6",
+          "n": 6,
+          "title": "Lock and Key"
+        },
+        {
+          "index": 80,
+          "id": "hold-your-fire-7",
+          "n": 7,
+          "title": "Mission"
+        },
+        {
+          "index": 81,
+          "id": "hold-your-fire-8",
+          "n": 8,
+          "title": "Turn the Page"
+        },
+        {
+          "index": 82,
+          "id": "hold-your-fire-9",
+          "n": 9,
+          "title": "Tai Shan"
+        },
+        {
+          "index": 83,
+          "id": "hold-your-fire-10",
+          "n": 10,
+          "title": "High Water"
+        }
+      ]
+    },
+    {
+      "id": "presto",
+      "title": "Presto",
+      "year": 1989,
+      "mbid": "d83a8fa7-6bd3-3fc9-bdb4-3122e78fd213",
+      "releaseMbid": "3692aad2-6a87-4551-a716-58a940cd3f3f",
+      "cover": "/covers/presto.jpg",
+      "tracks": [
+        {
+          "index": 84,
+          "id": "presto-1",
+          "n": 1,
+          "title": "Show Don’t Tell"
+        },
+        {
+          "index": 85,
+          "id": "presto-2",
+          "n": 2,
+          "title": "Chain Lightning"
+        },
+        {
+          "index": 86,
+          "id": "presto-3",
+          "n": 3,
+          "title": "The Pass"
+        },
+        {
+          "index": 87,
+          "id": "presto-4",
+          "n": 4,
+          "title": "War Paint"
+        },
+        {
+          "index": 88,
+          "id": "presto-5",
+          "n": 5,
+          "title": "Scars"
+        },
+        {
+          "index": 89,
+          "id": "presto-6",
+          "n": 6,
+          "title": "Presto"
+        },
+        {
+          "index": 90,
+          "id": "presto-7",
+          "n": 7,
+          "title": "Superconductor"
+        },
+        {
+          "index": 91,
+          "id": "presto-8",
+          "n": 8,
+          "title": "Anagram (for Mongo)"
+        },
+        {
+          "index": 92,
+          "id": "presto-9",
+          "n": 9,
+          "title": "Red Tide"
+        },
+        {
+          "index": 93,
+          "id": "presto-10",
+          "n": 10,
+          "title": "Hand Over Fist"
+        },
+        {
+          "index": 94,
+          "id": "presto-11",
+          "n": 11,
+          "title": "Available Light"
+        }
+      ]
+    },
+    {
+      "id": "roll-the-bones",
+      "title": "Roll the Bones",
+      "year": 1991,
+      "mbid": "e188de4e-6d15-3ca3-be49-fa13c67a03c0",
+      "releaseMbid": "1d659a83-93d1-4c8f-bfb4-fe2d3a8e3881",
+      "cover": "/covers/roll-the-bones.jpg",
+      "tracks": [
+        {
+          "index": 95,
+          "id": "roll-the-bones-1",
+          "n": 1,
+          "title": "Dreamline"
+        },
+        {
+          "index": 96,
+          "id": "roll-the-bones-2",
+          "n": 2,
+          "title": "Bravado"
+        },
+        {
+          "index": 97,
+          "id": "roll-the-bones-3",
+          "n": 3,
+          "title": "Roll the Bones"
+        },
+        {
+          "index": 98,
+          "id": "roll-the-bones-4",
+          "n": 4,
+          "title": "Face Up"
+        },
+        {
+          "index": 99,
+          "id": "roll-the-bones-5",
+          "n": 5,
+          "title": "Where’s My Thing?",
+          "detail": "Part IV, “Gangster of Boats” Trilogy"
+        },
+        {
+          "index": 100,
+          "id": "roll-the-bones-6",
+          "n": 6,
+          "title": "The Big Wheel"
+        },
+        {
+          "index": 101,
+          "id": "roll-the-bones-7",
+          "n": 7,
+          "title": "Heresy"
+        },
+        {
+          "index": 102,
+          "id": "roll-the-bones-8",
+          "n": 8,
+          "title": "Ghost of a Chance"
+        },
+        {
+          "index": 103,
+          "id": "roll-the-bones-9",
+          "n": 9,
+          "title": "Neurotica"
+        },
+        {
+          "index": 104,
+          "id": "roll-the-bones-10",
+          "n": 10,
+          "title": "You Bet Your Life"
+        }
+      ]
+    },
+    {
+      "id": "counterparts",
+      "title": "Counterparts",
+      "year": 1993,
+      "mbid": "8a203722-a642-381d-80b1-dc927a32238c",
+      "releaseMbid": "56960bf2-304f-410a-9c07-b6c9c69d17c0",
+      "cover": "/covers/counterparts.jpg",
+      "tracks": [
+        {
+          "index": 105,
+          "id": "counterparts-1",
+          "n": 1,
+          "title": "Animate"
+        },
+        {
+          "index": 106,
+          "id": "counterparts-2",
+          "n": 2,
+          "title": "Stick It Out"
+        },
+        {
+          "index": 107,
+          "id": "counterparts-3",
+          "n": 3,
+          "title": "Cut to the Chase"
+        },
+        {
+          "index": 108,
+          "id": "counterparts-4",
+          "n": 4,
+          "title": "Nobody’s Hero"
+        },
+        {
+          "index": 109,
+          "id": "counterparts-5",
+          "n": 5,
+          "title": "Between Sun & Moon"
+        },
+        {
+          "index": 110,
+          "id": "counterparts-6",
+          "n": 6,
+          "title": "Alien Shore"
+        },
+        {
+          "index": 111,
+          "id": "counterparts-7",
+          "n": 7,
+          "title": "The Speed of Love"
+        },
+        {
+          "index": 112,
+          "id": "counterparts-8",
+          "n": 8,
+          "title": "Double Agent"
+        },
+        {
+          "index": 113,
+          "id": "counterparts-9",
+          "n": 9,
+          "title": "Leave That Thing Alone"
+        },
+        {
+          "index": 114,
+          "id": "counterparts-10",
+          "n": 10,
+          "title": "Cold Fire"
+        },
+        {
+          "index": 115,
+          "id": "counterparts-11",
+          "n": 11,
+          "title": "Everyday Glory"
+        }
+      ]
+    },
+    {
+      "id": "test-for-echo",
+      "title": "Test for Echo",
+      "year": 1996,
+      "mbid": "99fdce4e-b6be-309e-8dbf-531df564a95f",
+      "releaseMbid": "de7b96e6-c0ba-4d79-95aa-7c526ec25279",
+      "cover": "/covers/test-for-echo.jpg",
+      "tracks": [
+        {
+          "index": 116,
+          "id": "test-for-echo-1",
+          "n": 1,
+          "title": "Test for Echo"
+        },
+        {
+          "index": 117,
+          "id": "test-for-echo-2",
+          "n": 2,
+          "title": "Driven"
+        },
+        {
+          "index": 118,
+          "id": "test-for-echo-3",
+          "n": 3,
+          "title": "Half the World"
+        },
+        {
+          "index": 119,
+          "id": "test-for-echo-4",
+          "n": 4,
+          "title": "The Color of Right"
+        },
+        {
+          "index": 120,
+          "id": "test-for-echo-5",
+          "n": 5,
+          "title": "Time and Motion"
+        },
+        {
+          "index": 121,
+          "id": "test-for-echo-6",
+          "n": 6,
+          "title": "Totem"
+        },
+        {
+          "index": 122,
+          "id": "test-for-echo-7",
+          "n": 7,
+          "title": "Dog Years"
+        },
+        {
+          "index": 123,
+          "id": "test-for-echo-8",
+          "n": 8,
+          "title": "Virtuality"
+        },
+        {
+          "index": 124,
+          "id": "test-for-echo-9",
+          "n": 9,
+          "title": "Resist"
+        },
+        {
+          "index": 125,
+          "id": "test-for-echo-10",
+          "n": 10,
+          "title": "Limbo"
+        },
+        {
+          "index": 126,
+          "id": "test-for-echo-11",
+          "n": 11,
+          "title": "Carve Away the Stone"
+        }
+      ]
+    },
+    {
+      "id": "vapor-trails",
+      "title": "Vapor Trails",
+      "year": 2002,
+      "mbid": "41b82b11-39ca-3e7b-a8a7-4249dbe3624e",
+      "releaseMbid": "0f750510-a054-3a6b-9e47-e61a1c49ea17",
+      "cover": "/covers/vapor-trails.jpg",
+      "tracks": [
+        {
+          "index": 127,
+          "id": "vapor-trails-1",
+          "n": 1,
+          "title": "One Little Victory"
+        },
+        {
+          "index": 128,
+          "id": "vapor-trails-2",
+          "n": 2,
+          "title": "Ceiling Unlimited"
+        },
+        {
+          "index": 129,
+          "id": "vapor-trails-3",
+          "n": 3,
+          "title": "Ghost Rider"
+        },
+        {
+          "index": 130,
+          "id": "vapor-trails-4",
+          "n": 4,
+          "title": "Peaceable Kingdom"
+        },
+        {
+          "index": 131,
+          "id": "vapor-trails-5",
+          "n": 5,
+          "title": "The Stars Look Down"
+        },
+        {
+          "index": 132,
+          "id": "vapor-trails-6",
+          "n": 6,
+          "title": "How It Is"
+        },
+        {
+          "index": 133,
+          "id": "vapor-trails-7",
+          "n": 7,
+          "title": "Vapor Trail"
+        },
+        {
+          "index": 134,
+          "id": "vapor-trails-8",
+          "n": 8,
+          "title": "Secret Touch"
+        },
+        {
+          "index": 135,
+          "id": "vapor-trails-9",
+          "n": 9,
+          "title": "Earthshine"
+        },
+        {
+          "index": 136,
+          "id": "vapor-trails-10",
+          "n": 10,
+          "title": "Sweet Miracle"
+        },
+        {
+          "index": 137,
+          "id": "vapor-trails-11",
+          "n": 11,
+          "title": "Nocturne"
+        },
+        {
+          "index": 138,
+          "id": "vapor-trails-12",
+          "n": 12,
+          "title": "Freeze",
+          "detail": "Part IV of “Fear”"
+        },
+        {
+          "index": 139,
+          "id": "vapor-trails-13",
+          "n": 13,
+          "title": "Out of the Cradle"
+        }
+      ]
+    },
+    {
+      "id": "snakes-and-arrows",
+      "title": "Snakes & Arrows",
+      "year": 2007,
+      "mbid": "a2ada2d0-d8aa-3406-94da-1ec352829903",
+      "releaseMbid": "4b61e1b2-d3fa-3c65-bfe3-a88accae9c50",
+      "cover": "/covers/snakes-and-arrows.jpg",
+      "tracks": [
+        {
+          "index": 140,
+          "id": "snakes-and-arrows-1",
+          "n": 1,
+          "title": "Far Cry"
+        },
+        {
+          "index": 141,
+          "id": "snakes-and-arrows-2",
+          "n": 2,
+          "title": "Armor and Sword"
+        },
+        {
+          "index": 142,
+          "id": "snakes-and-arrows-3",
+          "n": 3,
+          "title": "Workin’ Them Angels"
+        },
+        {
+          "index": 143,
+          "id": "snakes-and-arrows-4",
+          "n": 4,
+          "title": "The Larger Bowl",
+          "detail": "A Pantoum"
+        },
+        {
+          "index": 144,
+          "id": "snakes-and-arrows-5",
+          "n": 5,
+          "title": "Spindrift"
+        },
+        {
+          "index": 145,
+          "id": "snakes-and-arrows-6",
+          "n": 6,
+          "title": "The Main Monkey Business"
+        },
+        {
+          "index": 146,
+          "id": "snakes-and-arrows-7",
+          "n": 7,
+          "title": "The Way the Wind Blows"
+        },
+        {
+          "index": 147,
+          "id": "snakes-and-arrows-8",
+          "n": 8,
+          "title": "Hope"
+        },
+        {
+          "index": 148,
+          "id": "snakes-and-arrows-9",
+          "n": 9,
+          "title": "Faithless"
+        },
+        {
+          "index": 149,
+          "id": "snakes-and-arrows-10",
+          "n": 10,
+          "title": "Bravest Face"
+        },
+        {
+          "index": 150,
+          "id": "snakes-and-arrows-11",
+          "n": 11,
+          "title": "Good News First"
+        },
+        {
+          "index": 151,
+          "id": "snakes-and-arrows-12",
+          "n": 12,
+          "title": "Malignant Narcissism"
+        },
+        {
+          "index": 152,
+          "id": "snakes-and-arrows-13",
+          "n": 13,
+          "title": "We Hold On"
+        }
+      ]
+    },
+    {
+      "id": "clockwork-angels",
+      "title": "Clockwork Angels",
+      "year": 2012,
+      "mbid": "44a619d4-f5b1-4e49-9b96-e50cf1fd9879",
+      "releaseMbid": "18019e62-6ba4-43ba-b3e1-5a50345780e6",
+      "cover": "/covers/clockwork-angels.jpg",
+      "tracks": [
+        {
+          "index": 153,
+          "id": "clockwork-angels-1",
+          "n": 1,
+          "title": "Caravan"
+        },
+        {
+          "index": 154,
+          "id": "clockwork-angels-2",
+          "n": 2,
+          "title": "BU2B"
+        },
+        {
+          "index": 155,
+          "id": "clockwork-angels-3",
+          "n": 3,
+          "title": "Clockwork Angels"
+        },
+        {
+          "index": 156,
+          "id": "clockwork-angels-4",
+          "n": 4,
+          "title": "The Anarchist"
+        },
+        {
+          "index": 157,
+          "id": "clockwork-angels-5",
+          "n": 5,
+          "title": "Carnies"
+        },
+        {
+          "index": 158,
+          "id": "clockwork-angels-6",
+          "n": 6,
+          "title": "Halo Effect"
+        },
+        {
+          "index": 159,
+          "id": "clockwork-angels-7",
+          "n": 7,
+          "title": "Seven Cities of Gold"
+        },
+        {
+          "index": 160,
+          "id": "clockwork-angels-8",
+          "n": 8,
+          "title": "The Wreckers"
+        },
+        {
+          "index": 161,
+          "id": "clockwork-angels-9",
+          "n": 9,
+          "title": "Headlong Flight"
+        },
+        {
+          "index": 162,
+          "id": "clockwork-angels-10",
+          "n": 10,
+          "title": "BU2B2"
+        },
+        {
+          "index": 163,
+          "id": "clockwork-angels-11",
+          "n": 11,
+          "title": "Wish Them Well"
+        },
+        {
+          "index": 164,
+          "id": "clockwork-angels-12",
+          "n": 12,
+          "title": "The Garden"
+        }
+      ]
+    }
+  ]
+}
