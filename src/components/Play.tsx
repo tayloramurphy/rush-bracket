@@ -3,6 +3,7 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import { requireSong } from "../lib/catalog";
 import { availableMatches, progressOf, type EngineState, type Matchup } from "../lib/ranking";
 import type { Song } from "../types";
+import { BracketBoard } from "./BracketBoard";
 import { StarMark } from "./StarMark";
 
 interface PlayProps {
@@ -43,8 +44,9 @@ export function Play({ engine, canUndo, onChoose, onUndo, onExit }: PlayProps) {
   }, [matches, onChoose, onUndo]);
 
   useEffect(() => {
+    if (engine.mode !== "swipe") return;
     document.getElementById("content")?.focus();
-  }, [heatKey]);
+  }, [heatKey, engine.mode]);
 
   const left = matches[0] ? requireSong(matches[0].a) : null;
   const right = matches[0] ? requireSong(matches[0].b) : null;
@@ -70,16 +72,16 @@ export function Play({ engine, canUndo, onChoose, onUndo, onExit }: PlayProps) {
         </div>
       </header>
 
-      <main className="shell play-main" id="content" tabIndex={-1}>
+      <main className={`shell play-main ${engine.mode === "bracket" ? "bracket-main" : ""}`} id="content" tabIndex={-1}>
         <p className="sr-only" aria-live="polite">
           {left && right
             ? `${progress.roundLabel}. ${left.title} or ${right.title}. ${matches.length} open matchup${matches.length === 1 ? "" : "s"}.`
             : "Ranking complete"}
         </p>
-        <h1>{engine.mode === "swipe" ? "Which one wins?" : progress.roundLabel}</h1>
+        <h1>{engine.mode === "swipe" ? "Which one wins?" : "Bracket"}</h1>
         {engine.mode === "bracket" && (
           <p className="hint">
-            {matches.length} still open in this heat. Tap a side, or use 1 and 2 for the highlighted pair. Z undoes.
+            Pick a side in the open match. Winners move ahead, and finished rounds stay on the board. Keys 1 and 2, Z undoes.
           </p>
         )}
         {engine.mode === "swipe" && (
@@ -89,19 +91,7 @@ export function Play({ engine, canUndo, onChoose, onUndo, onExit }: PlayProps) {
         {engine.mode === "swipe" && matches[0] && (
           <SwipeArena match={matches[0]} onChoose={(winner) => onChoose(matches[0]!.key, winner)} />
         )}
-        {engine.mode === "bracket" && (
-          <ol className="board">
-            {matches.map((match, index) => (
-              <li key={match.key}>
-                <BracketRow
-                  match={match}
-                  featured={index === 0}
-                  onChoose={(winner) => onChoose(match.key, winner)}
-                />
-              </li>
-            ))}
-          </ol>
-        )}
+        {engine.mode === "bracket" && <BracketBoard engine={engine} onChoose={onChoose} />}
       </main>
     </div>
   );
@@ -192,35 +182,3 @@ function ChoiceCard({ song, hotkey, onPick }: { song: Song; hotkey: string; onPi
   );
 }
 
-function BracketRow({
-  match,
-  featured,
-  onChoose,
-}: {
-  match: Matchup;
-  featured: boolean;
-  onChoose: (winner: string) => void;
-}) {
-  const left = requireSong(match.a);
-  const right = requireSong(match.b);
-  return (
-    <div className={`pair ${featured ? "featured" : ""}`}>
-      <SongSide song={left} onPick={() => onChoose(left.id)} />
-      <SongSide song={right} onPick={() => onChoose(right.id)} />
-    </div>
-  );
-}
-
-function SongSide({ song, onPick }: { song: Song; onPick: () => void }) {
-  return (
-    <button type="button" className="side" onClick={onPick}>
-      <img src={song.cover} alt="" width={88} height={88} />
-      <span>
-        <span className="song-title">{song.title}</span>
-        <span className="kicker">
-          {song.album} · {song.year}
-        </span>
-      </span>
-    </button>
-  );
-}

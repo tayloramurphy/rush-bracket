@@ -51,12 +51,56 @@ export interface EngineState {
   bubble: BubbleState | null;
   bubblePasses: number;
   bubbleWindow: number;
+  /** Every matchup this run has shown, including decided ones. */
+  archive: BracketColumn[];
+  currentBye: string | null;
 }
 
 export interface Matchup {
   key: string;
   a: string;
   b: string;
+}
+
+export interface BracketMatch {
+  uid: string;
+  group: number;
+  a: string;
+  b: string;
+  winner: string | null;
+  /** Engine key while this match can still be picked. */
+  key: string | null;
+  fromA: string | null;
+  fromB: string | null;
+}
+
+export interface BracketLane {
+  id: number;
+  /** Best-first songs already ordered out of this group. */
+  placed: string[];
+  open: boolean;
+}
+
+export interface BracketColumn {
+  id: string;
+  label: string;
+  detail: string;
+  status: "active" | "complete";
+  matches: BracketMatch[];
+  byes: string[];
+  lanes: BracketLane[];
+}
+
+export interface BracketPreviewSlot {
+  a: string | null;
+  b: string | null;
+  /** A song that skipped this round, not an unfinished pairing. */
+  bye?: boolean;
+}
+
+export interface BracketView {
+  columns: BracketColumn[];
+  preview: { label: string; slots: BracketPreviewSlot[] } | null;
 }
 
 export interface PlanInfo {
@@ -204,11 +248,157 @@ function drain(slot: MergeSlot): void {
   }
 }
 
+function sourceOf(archive: BracketColumn[], songId: string): string | null {
+  for (let i = archive.length - 1; i >= 0; i--) {
+    const match = [...archive[i]!.matches].reverse().find((item) => item.winner === songId);
+    if (match) return match.uid;
+  }
+  return null;
+}
+
+function syncMergeColumn(state: EngineState): void {
+  if (!state.archive) state.archive = [];
+  if (state.done && state.merges.length === 0) {
+    for (const column of state.archive) column.status = "complete";
+    return;
+  }
+  const id = `merge-${state.mergeRound}`;
+  let column = state.archive.find((item) => item.id === id);
+  if (!column) {
+    for (const item of state.archive) item.status = "complete";
+    column = {
+      id,
+      label: `Round ${Math.min(state.mergeRound, state.mergeRounds)}`,
+      detail: state.mergeRound === 1 ? "Opening seed" : "Leaders of each group meet",
+      status: "active",
+      matches: [],
+      byes: [],
+      lanes: [],
+    };
+    state.archive.push(column);
+  }
+  state.merges.forEach((slot, index) => {
+    if (slot.li >= slot.left.length || slot.ri >= slot.right.length) return;
+    const a = slot.left[slot.li]!;
+    const b = slot.right[slot.ri]!;
+    const exists = column.matches.some(
+      (match) => match.group === index && match.winner === null && match.a === a && match.b === b,
+    );
+    if (exists) return;
+    column.matches.push({
+      uid: `${id}-g${index}-m${column.matches.length}`,
+      group: index,
+      a,
+      b,
+      winner: null,
+      key: `m${index}`,
+      fromA: sourceOf(state.archive, a),
+      fromB: sourceOf(state.archive, b),
+    });
+  });
+  column.lanes = state.merges.map((slot, index) => ({
+    id: index,
+    placed: [...slot.out],
+    open: slot.li < slot.left.length && slot.ri < slot.right.length,
+  }));
+  state.leftover.forEach((run, index) => {
+    column.lanes.push({ id: state.merges.length + index, placed: [...run], open: false });
+  });
+  column.byes = state.leftover.flatMap((run) => (run.length === 1 ? run : []));
+}
+
+function syncSwissColumn(state: EngineState): void {
+  if (!state.archive) state.archive = [];
+  const id = `swiss-${state.round}`;
+  if (state.archive.some((column) => column.id === id)) return;
+  for (const column of state.archive) column.status = "complete";
+  const matches = state.pairings.map((pairing, index) => ({
+    uid: `${id}-${index}`,
+    group: 0,
+    a: pairing.a,
+    b: pairing.b,
+    winner: pairing.winner,
+    key: pairing.winner ? null : `p${index}`,
+    fromA: sourceOf(state.archive, pairing.a),
+    fromB: sourceOf(state.archive, pairing.b),
+  }));
+  state.archive.push({
+    id,
+    label: `Round ${state.round}`,
+    detail: state.round === 1 ? "Random seed" : "Redrawn from the standings",
+    status: "active",
+    matches,
+    byes: state.currentBye ? [state.currentBye] : [],
+    lanes: [],
+  });
+}
+
+function syncBubbleColumn(state: EngineState): void {
+  if (!state.archive) state.archive = [];
+  if (state.done || !state.bubble) {
+    for (const column of state.archive) column.status = "complete";
+    return;
+  }
+  const bubble = state.bubble;
+  const id = `bubble-${bubble.region}-${bubble.pass}`;
+  let column = state.archive.find((item) => item.id === id);
+  if (!column) {
+    for (const item of state.archive) item.status = "complete";
+    column = {
+      id,
+      label: bubble.region === "top" ? "Top cut" : "Bottom cut",
+      detail: `Pass ${bubble.pass + 1} · who ranks higher`,
+      status: "active",
+      matches: [],
+      byes: [],
+      lanes: [],
+    };
+    state.archive.push(column);
+  }
+  const spot = bubbleSpot(state);
+  if (spot == null) return;
+  const a = bubble.order[spot]!;
+  const b = bubble.order[spot + 1]!;
+  if (column.matches.some((match) => match.winner === null && match.a === a && match.b === b)) return;
+  column.matches.push({
+    uid: `${id}-${column.matches.length}`,
+    group: 0,
+    a,
+    b,
+    winner: null,
+    key: "bubble",
+    fromA: sourceOf(state.archive, a),
+    fromB: sourceOf(state.archive, b),
+  });
+}
+
+function markArchiveWinner(state: EngineState, a: string, b: string, winner: string): void {
+  if (!state.archive) return;
+  for (let i = state.archive.length - 1; i >= 0; i--) {
+    const match = [...state.archive[i]!.matches].reverse().find(
+      (item) => item.winner === null && ((item.a === a && item.b === b) || (item.a === b && item.b === a)),
+    );
+    if (!match) continue;
+    match.winner = winner;
+    match.key = null;
+    return;
+  }
+}
+
+function seedArchive(state: EngineState): void {
+  if (!state.archive) state.archive = [];
+  if (state.archive.length > 0 || state.done) return;
+  if (state.strategy === "merge") syncMergeColumn(state);
+  else if (state.phase === "bubble") syncBubbleColumn(state);
+  else syncSwissColumn(state);
+}
+
 function openMerges(state: EngineState): void {
   if (state.runs.length <= 1) {
     state.merges = [];
     state.leftover = [];
     state.done = true;
+    for (const column of state.archive ?? []) column.status = "complete";
     return;
   }
   const merges: MergeSlot[] = [];
@@ -223,6 +413,7 @@ function openMerges(state: EngineState): void {
   state.merges = merges;
   state.leftover = leftover;
   state.done = false;
+  syncMergeColumn(state);
 }
 
 function chooseBye(order: string[], byes: Record<string, number>): string {
@@ -236,11 +427,13 @@ function chooseBye(order: string[], byes: Record<string, number>): string {
 function dealSwiss(state: EngineState): void {
   const order = standings(state);
   const sitting = new Set<string>();
+  let bye: string | null = null;
   if (order.length % 2 === 1) {
-    const bye = chooseBye(order, state.byes);
+    bye = chooseBye(order, state.byes);
     sitting.add(bye);
     state.byes[bye] = (state.byes[bye] ?? 0) + 1;
   }
+  state.currentBye = bye;
   const pool = order.filter((id) => !sitting.has(id));
   const unpaired = new Set(pool);
   const played = new Set(state.played);
@@ -272,6 +465,7 @@ function dealSwiss(state: EngineState): void {
   }
   state.pairings = pairings;
   state.phase = "rounds";
+  syncSwissColumn(state);
 }
 
 function startBubble(state: EngineState): void {
@@ -286,7 +480,12 @@ function startBubble(state: EngineState): void {
     index: 0,
     window,
   };
-  if (state.bubblePasses <= 0 || window < 2) state.done = true;
+  if (state.bubblePasses <= 0 || window < 2) {
+    state.done = true;
+    for (const column of state.archive ?? []) column.status = "complete";
+    return;
+  }
+  syncBubbleColumn(state);
 }
 
 function bubbleSpot(state: EngineState): number | null {
@@ -308,7 +507,11 @@ function advanceMerge(state: EngineState, index: number, winnerId: string): void
   slot.out.push(winnerId);
   drain(slot);
   const finished = state.merges.every((item) => item.li >= item.left.length && item.ri >= item.right.length);
-  if (!finished) return;
+  if (!finished) {
+    syncMergeColumn(state);
+    return;
+  }
+  syncMergeColumn(state);
   state.runs = state.merges.map((item) => item.out).concat(state.leftover);
   state.mergeRound += 1;
   openMerges(state);
@@ -336,16 +539,21 @@ function advanceBubble(state: EngineState, winnerId: string): void {
   bubble.index += 1;
   const count = bubble.order.length;
   const window = Math.min(bubble.window, count);
-  if (bubble.index <= window - 2) return;
+  if (bubble.index <= window - 2) {
+    syncBubbleColumn(state);
+    return;
+  }
   bubble.index = 0;
   const useBottom = count > window;
   if (bubble.region === "top" && useBottom) {
     bubble.region = "bottom";
+    syncBubbleColumn(state);
     return;
   }
   bubble.region = "top";
   bubble.pass += 1;
   if (bubble.pass >= bubble.passes) state.done = true;
+  syncBubbleColumn(state);
 }
 
 export function createEngine(
@@ -386,6 +594,8 @@ export function createEngine(
     bubble: null,
     bubblePasses: plan.bubblePasses,
     bubbleWindow: plan.bubbleWindow,
+    archive: [],
+    currentBye: null,
   };
   if (plan.strategy === "merge") openMerges(state);
   else dealSwiss(state);
@@ -413,13 +623,60 @@ export function availableMatches(state: EngineState): Matchup[] {
   );
 }
 
+/** Fill archive fields missing from an older saved run. */
+export function normalizeEngine(state: EngineState): void {
+  if (!state.archive) state.archive = [];
+  if (state.currentBye === undefined) state.currentBye = null;
+  seedArchive(state);
+}
+
+export function bracketBoard(state: EngineState): BracketView {
+  const columns = state.archive ?? [];
+  const active = [...columns].reverse().find((column) => column.status === "active");
+  let preview: BracketView["preview"] = null;
+  if (
+    state.strategy === "merge" &&
+    active &&
+    active.id.startsWith("merge-") &&
+    columns.at(-1)?.id === active.id &&
+    state.mergeRound < state.mergeRounds
+  ) {
+    const slots: BracketPreviewSlot[] = [];
+    const lanes = active.lanes ?? [];
+    for (let i = 0; i < lanes.length; i += 2) {
+      const left = lanes[i];
+      const right = lanes[i + 1];
+      if (!left) continue;
+      if (!right) {
+        const song = left.open ? null : (left.placed[0] ?? null);
+        if (song) slots.push({ a: song, b: null, bye: true });
+        continue;
+      }
+      const slot = {
+        a: left.open ? null : (left.placed[0] ?? null),
+        b: right.open ? null : (right.placed[0] ?? null),
+      };
+      if (slot.a || slot.b) slots.push(slot);
+    }
+    if (slots.some((slot) => slot.a || slot.b)) {
+      preview = {
+        label: `Round ${Math.min(state.mergeRound + 1, state.mergeRounds)}`,
+        slots,
+      };
+    }
+  }
+  return { columns, preview };
+}
+
 export function applyChoice(prev: EngineState, key: string, winnerId: string): EngineState {
   const state = structuredClone(prev);
+  normalizeEngine(state);
   const match = availableMatches(state).find((item) => item.key === key);
   if (!match) throw new Error("That matchup is no longer open");
   if (winnerId !== match.a && winnerId !== match.b) throw new Error("Pick one of the two songs");
   const loserId = winnerId === match.a ? match.b : match.a;
   record(state, match.a, match.b, winnerId, loserId);
+  markArchiveWinner(state, match.a, match.b, winnerId);
   state.comparisons += 1;
   if (key.startsWith("m")) advanceMerge(state, Number(key.slice(1)), winnerId);
   else if (key.startsWith("p")) {

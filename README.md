@@ -26,7 +26,7 @@ Before you start, drop whole albums or individual songs. Every exclusion is reve
 Two play modes produce the same kind of result:
 
 - **Swipe** — one matchup at a time. Tap a song or flick it sideways. Keys `1` and `2`, `Z` to undo.
-- **Bracket** — a randomly seeded board. Each heat shows every open pairing. Tap a winner.
+- **Bracket** — a round-by-round board. Open matchups are live; decided ones stay on the board with the winner moving into the next slot. Scroll the rounds, or jump with the round tabs. Tap a side to pick.
 
 Depth:
 

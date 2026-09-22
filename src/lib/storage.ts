@@ -1,4 +1,4 @@
-import type { EngineState } from "./ranking";
+import { normalizeEngine, type EngineState } from "./ranking";
 import type { Depth, Mode } from "../types";
 
 const RUN_KEY = "rush-bracket:run:v1";
@@ -46,6 +46,7 @@ export function loadRun(): EngineState | null {
   const run = readJson<EngineState>(RUN_KEY);
   if (!run || run.v !== 1 || !Array.isArray(run.ids) || run.ids.length < 2 || run.done) return null;
   if (run.strategy !== "merge" && run.strategy !== "swiss") return null;
+  normalizeEngine(run);
   return run;
 }
 
