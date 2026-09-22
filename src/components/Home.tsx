@@ -22,7 +22,7 @@ const modes: { id: Mode; title: string; copy: string }[] = [
   {
     id: "bracket",
     title: "Bracket",
-    copy: "A seeded playoff. Winners move along the bracket lines.",
+    copy: "Winners bracket, a second-chance losers bracket, then a top cut.",
   },
 ];
 
@@ -161,13 +161,15 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
             const info = previewPlan(Math.max(pool.length, 2), item.id, mode);
             const small = pool.length >= 2 && item.id !== "full" && info.complete;
             const copy =
-              mode === "bracket" && item.id === "full"
-                ? "A full playoff. Every song ends up with a place."
-                : mode === "bracket" && item.id === "standard"
-                  ? "The championship bracket, then a longer pass on the top and bottom."
-                  : mode === "bracket"
-                    ? "The championship bracket, then the top 10 and bottom 10."
-                    : item.copy;
+              mode === "bracket" && pool.length >= 2 && pool.length <= 20
+                ? "This pool is one playoff. The winner is your favorite."
+                : mode === "bracket" && item.id === "full"
+                  ? "Winners, then a losers bracket, then a top-20 playoff."
+                  : mode === "bracket" && item.id === "standard"
+                    ? "The same path, with a top-16 final cut."
+                    : mode === "bracket"
+                      ? "The same path, with a top-10 final cut."
+                      : item.copy;
             return (
               <button
                 key={item.id}
@@ -178,7 +180,7 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
                 onClick={() => setDepth(item.id)}
               >
                 <span className="select-title">{item.title}</span>
-                <span>{small ? "This pool is small, so every song gets a complete place." : copy}</span>
+                <span>{mode !== "bracket" && small ? "This pool is small, so every song gets a complete place." : copy}</span>
                 <span className="estimate">
                   {pool.length < 2 ? "Need 2 songs" : `~${info.estimate} matchups · ~${minutesFor(info.estimate)} min`}
                 </span>
@@ -293,11 +295,13 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
           {pool.length < 2 ? "Keep at least two songs" : `Start with ${pool.length} songs`}
         </button>
         <p>
-          {plan.complete
+          {plan.complete && mode === "swipe"
             ? "This run builds a complete order, favorite down to least favorite."
-            : mode === "bracket"
-              ? "The playoff crowns a favorite, then sorts out the top and the bottom."
-              : "Wins, losses, and a final pass over the top and bottom produce the same kind of result card."}
+            : plan.complete && mode === "bracket"
+              ? "One playoff. The winner is your favorite, and earlier exits fill out the rest."
+              : mode === "bracket"
+                ? "Winners, a losers bracket, then a short final cut. Early exits settle the bottom."
+                : "Wins, losses, and a final pass over the top and bottom produce the same kind of result card."}
         </p>
       </div>
 

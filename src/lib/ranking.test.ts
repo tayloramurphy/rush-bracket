@@ -1,12 +1,9 @@
-import { describe, expect, it } from "vitest";
-import {
-  applyChoice,
-  availableMatches,
-  createEngine,
-  finalRanking,
-  previewPlan,
-  type EngineState,
-} from "./ranking";
+import { describe, expect, it, vi } from "vitest";
+import { songs } from "./catalog";
+import { elimRoundLabel } from "./elim";
+import { progressOf, applyChoice, availableMatches, createEngine, finalRanking, previewPlan, type EngineState } from "./ranking";
+import { decodeResult, encodeResult, resultFromEngine } from "./share";
+import { clearRun, loadRun, saveRun } from "./storage";
 
 function play(ids: string[], depth: "quick" | "standard" | "full", prefer: (a: string, b: string) => string, mode: "swipe" | "bracket" = "bracket"): EngineState {
   let state = createEngine(ids, mode, depth, () => 0);
@@ -71,18 +68,35 @@ describe("shorter depths", () => {
   });
 });
 
+function winnersOf(state: EngineState) {
+  const tree = state.elim?.trees.find((item) => item.id === "winners");
+  if (!tree) throw new Error("missing winners bracket");
+  return tree.matches;
+}
+
+function entrants(matches: { round: number; a: string | null; b: string | null }[]): string[] {
+  const players = new Set<string>();
+  for (const match of matches) {
+    if (match.round !== 0) continue;
+    if (match.a) players.add(match.a);
+    if (match.b) players.add(match.b);
+  }
+  return [...players];
+}
+
 describe("playoff bracket", () => {
   it("keeps a decided match and sends the winner along the line", () => {
     const state = createEngine(["a", "b", "c", "d"], "bracket", "full", () => 0);
     expect(state.strategy).toBe("elim");
+    expect(state.elim?.v).toBe(2);
     const match = availableMatches(state)[0]!;
     const next = applyChoice(state, match.key, match.a);
-    const recorded = next.elim?.matches.find((item) => item.id === match.key);
+    const recorded = winnersOf(next).find((item) => item.id === match.key);
     expect(recorded?.winner).toBe(match.a);
     expect(recorded?.b).toBe(match.b);
-    const parent = next.elim?.matches.find((item) => item.feedA === match.key || item.feedB === match.key);
+    const parent = winnersOf(next).find((item) => item.feedA === match.key || item.feedB === match.key);
     expect(parent?.a === match.a || parent?.b === match.a).toBe(true);
-    const before = state.elim?.matches.find((item) => item.id === match.key);
+    const before = winnersOf(state).find((item) => item.id === match.key);
     expect(before?.winner).toBeNull();
   });
 
@@ -90,7 +104,7 @@ describe("playoff bracket", () => {
     let state = createEngine(["a", "b", "c", "d"], "bracket", "full", () => 0);
     const first = availableMatches(state)[0]!;
     state = applyChoice(state, first.key, first.a);
-    const parent = state.elim?.matches.find((item) => item.feedA === first.key || item.feedB === first.key);
+    const parent = winnersOf(state).find((item) => item.feedA === first.key || item.feedB === first.key);
     const filled = [parent?.a, parent?.b].filter(Boolean);
     expect(filled).toEqual([first.a]);
     expect(parent?.winner).toBeNull();
@@ -99,28 +113,88 @@ describe("playoff bracket", () => {
 
   it("auto-advances a bye into the next round", () => {
     const state = createEngine(["a", "b", "c", "d", "e"], "bracket", "full", () => 0);
-    const bye = state.elim?.matches.find((match) => match.round === 0 && match.bye && match.winner);
+    const bye = winnersOf(state).find((match) => match.round === 0 && match.bye && match.winner);
     expect(bye?.winner).toBeTruthy();
-    const parent = state.elim?.matches.find((match) => match.feedA === bye?.id || match.feedB === bye?.id);
+    const parent = winnersOf(state).find((match) => match.feedA === bye?.id || match.feedB === bye?.id);
     expect(parent?.a === bye?.winner || parent?.b === bye?.winner).toBe(true);
   });
 
-  it("places every song in true order", () => {
+  it("uses one playoff when the pool is small and crowns the favorite", () => {
     const ids = Array.from({ length: 17 }, (_, index) => String(index));
+    const started = createEngine(ids, "bracket", "full", () => 0);
+    expect(elimRoundLabel(started.elim!)).toMatch(/^Playoff/);
+    expect(elimRoundLabel(started.elim!)).not.toMatch(/For #/);
     const state = play(ids, "full", (a, b) => (Number(a) < Number(b) ? a : b), "bracket");
-    expect(state.strategy).toBe("elim");
-    expect(rankedIds(state)).toEqual(ids);
+    expect(state.elim?.trees.map((tree) => tree.id)).toEqual(["winners"]);
+    const ranking = rankedIds(state);
+    expect(ranking[0]).toBe("0");
+    expect(ranking).toHaveLength(17);
   });
 
-  it("locks the top 10 and the bottom 10 on a short playoff", () => {
-    const ids = Array.from({ length: 25 }, (_, index) => String(index).padStart(2, "0"));
-    const state = play(ids, "quick", (a, b) => (a < b ? a : b), "bracket");
-    expect(state.strategy).toBe("elim");
-    expect(state.elim?.complete).toBe(false);
-    const ranking = rankedIds(state);
-    expect(ranking.slice(0, 10)).toEqual(ids.slice(0, 10));
-    expect(ranking.slice(-10)).toEqual(ids.slice(-10));
-    expect(ranking[0]).toBe("00");
-    expect(ranking.at(-1)).toBe("24");
+  it("plays winners, a second chance, a top cut, and the bottom", () => {
+    const ids = Array.from({ length: 80 }, (_, index) => String(index).padStart(2, "0"));
+    for (const depth of ["quick", "standard", "full"] as const) {
+      const labels = new Set<string>();
+      let state = createEngine(ids, "bracket", depth, () => 0);
+      expect(state.elim?.topCutSize).toBe(depth === "quick" ? 10 : depth === "standard" ? 16 : 20);
+      let guard = 0;
+      while (!state.done) {
+        labels.add(progressOf(state).roundLabel);
+        const matches = availableMatches(state);
+        expect(matches.length, `${depth} stuck after ${state.comparisons}`).toBeGreaterThan(0);
+        const match = matches[0]!;
+        state = applyChoice(state, match.key, match.a < match.b ? match.a : match.b);
+        if (++guard > 5000) throw new Error(`${depth} did not finish`);
+      }
+      const text = [...labels].join(" | ");
+      expect(text).not.toMatch(/For #/);
+      expect(text).toMatch(/Final Four/);
+      expect([...labels].some((label) => label.startsWith("Winners"))).toBe(true);
+      expect([...labels].some((label) => label.startsWith("Losers"))).toBe(true);
+      expect([...labels].some((label) => label.startsWith("Top "))).toBe(true);
+      expect([...labels].some((label) => label.startsWith("Bottom"))).toBe(true);
+      const trees = state.elim?.trees.map((tree) => tree.id) ?? [];
+      expect(trees).toEqual(expect.arrayContaining(["winners", "losers", "topcut", "bottom"]));
+      const top = state.elim?.trees.find((tree) => tree.id === "topcut");
+      expect(entrants(top?.matches ?? []).length).toBeLessThanOrEqual(state.elim?.topCutSize ?? 0);
+      const ranking = rankedIds(state);
+      expect(ranking[0]).toBe("00");
+      expect(ranking.at(-1)).toBe("79");
+      expect(ranking.slice(0, 10)).toHaveLength(10);
+      expect(ranking.slice(-10)).toHaveLength(10);
+    }
+  });
+
+  it("shares a finished bracket and resumes a v2 run", () => {
+    const ids = songs.slice(0, 6).map((song) => song.id);
+    const state = play(ids, "full", (a, b) => (a < b ? a : b));
+    const result = resultFromEngine(state, "Geddy");
+    expect(result.mode).toBe("bracket");
+    expect(result.ranked).toHaveLength(6);
+    expect(decodeResult(encodeResult(result)).ranked).toEqual(result.ranked);
+
+    const memory = new Map<string, string>();
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => memory.get(key) ?? null,
+      setItem: (key: string, value: string) => memory.set(key, value),
+      removeItem: (key: string) => memory.delete(key),
+    });
+    localStorage.setItem(
+      "rush-bracket:run:v1",
+      JSON.stringify({ v: 1, ids: ["a", "b"], strategy: "elim", done: false, elim: { matches: [], region: "championship" } }),
+    );
+    expect(loadRun()).toBeNull();
+
+    const fresh = createEngine(["a", "b", "c", "d"], "bracket", "quick", () => 0);
+    const picked = applyChoice(fresh, availableMatches(fresh)[0]!.key, availableMatches(fresh)[0]!.a);
+    saveRun(picked);
+    const loaded = loadRun();
+    expect(loaded?.elim?.v).toBe(2);
+    expect(loaded?.elim?.phase).toBe("winners");
+    expect(loaded?.comparisons).toBe(1);
+    expect(winnersOf(loaded!).some((match) => match.winner)).toBe(true);
+    clearRun();
+    expect(loadRun()).toBeNull();
+    vi.unstubAllGlobals();
   });
 });

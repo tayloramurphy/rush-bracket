@@ -4,14 +4,18 @@ import { Play } from "./components/Play";
 import { Results } from "./components/Results";
 import { applyChoice, availableMatches, createEngine, type EngineState } from "./lib/ranking";
 import { readShareToken, resultFromEngine, shareHash, type ResultPayload } from "./lib/share";
-import { clearRun, loadRun, loadSetup, saveRun } from "./lib/storage";
+import { clearRun, loadReview, loadRun, loadSetup, reviewMatches, saveReview, saveRun, type BracketReview } from "./lib/storage";
+import type { ElimState } from "./lib/elim";
+import { ElimBracket } from "./components/ElimBracket";
+import { StarMark } from "./components/StarMark";
 import type { Depth, Mode } from "./types";
 import { songByIndex } from "./lib/catalog";
 
 type Screen =
   | { kind: "home"; notice?: string }
   | { kind: "play"; engine: EngineState; undo: EngineState[] }
-  | { kind: "results"; result: ResultPayload; shared: boolean };
+  | { kind: "results"; result: ResultPayload; shared: boolean }
+  | { kind: "review"; result: ResultPayload; shared: boolean; elim: ElimState };
 
 function initialScreen(): Screen {
   const shared = readShareToken();
@@ -23,6 +27,7 @@ function initialScreen(): Screen {
 export function App() {
   const [screen, setScreen] = useState<Screen>(initialScreen);
   const [saved, setSaved] = useState<EngineState | null>(() => loadRun());
+  const [review, setReview] = useState<BracketReview | null>(() => loadReview());
 
   useEffect(() => {
     function onHash() {
@@ -74,6 +79,11 @@ export function App() {
     const next = applyChoice(screen.engine, key, winner);
     if (next.done) {
       const result = resultFromEngine(next, loadSetup()?.name ?? "");
+      if (next.strategy === "elim" && next.elim) {
+        const savedReview = { elim: next.elim, ranked: result.ranked };
+        saveReview(savedReview);
+        setReview(savedReview);
+      }
       clearRun();
       setSaved(null);
       history.pushState(null, "", shareHash(result));
@@ -128,7 +138,47 @@ export function App() {
         />
       )}
       {screen.kind === "results" && (
-        <Results result={screen.result} shared={screen.shared} onHome={goHome} />
+        <Results
+          result={screen.result}
+          shared={screen.shared}
+          onHome={goHome}
+          onViewBracket={
+            screen.result.mode === "bracket" && reviewMatches(review, screen.result.ranked)
+              ? () => {
+                  const current = review && reviewMatches(review, screen.result.ranked) ? review : loadReview();
+                  if (!current || screen.kind !== "results") return;
+                  setScreen({ kind: "review", result: screen.result, shared: screen.shared, elim: current.elim });
+                }
+              : undefined
+          }
+        />
+      )}
+      {screen.kind === "review" && (
+        <div className="play">
+          <header className="playbar">
+            <div className="shell bar-inner">
+              <button type="button" className="brand-button" onClick={goHome}>
+                <StarMark size={18} />
+                <span>Rush Bracket</span>
+              </button>
+              <div className="progress-copy">
+                <strong>Bracket review</strong>
+                <span>Pan and zoom. Picks are closed.</span>
+              </div>
+              <button
+                type="button"
+                className="ghost"
+                data-testid="back-to-results"
+                onClick={() => setScreen({ kind: "results", result: screen.result, shared: screen.shared })}
+              >
+                Back to results
+              </button>
+            </div>
+          </header>
+          <main className="shell play-main bracket-main" id="content">
+            <ElimBracket elim={screen.elim} readOnly />
+          </main>
+        </div>
       )}
     </>
   );

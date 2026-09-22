@@ -1,8 +1,15 @@
+import type { ElimState } from "./elim";
 import { normalizeEngine, type EngineState } from "./ranking";
 import type { Depth, Mode } from "../types";
 
 const RUN_KEY = "rush-bracket:run:v1";
 const SETUP_KEY = "rush-bracket:setup:v1";
+const REVIEW_KEY = "rush-bracket:review:v2";
+
+export interface BracketReview {
+  elim: ElimState;
+  ranked: number[];
+}
 
 export interface SetupPrefs {
   mode: Mode;
@@ -46,9 +53,14 @@ export function loadRun(): EngineState | null {
   const run = readJson<EngineState>(RUN_KEY);
   if (!run || run.v !== 1 || !Array.isArray(run.ids) || run.ids.length < 2 || run.done) return null;
   if (run.strategy !== "merge" && run.strategy !== "swiss" && run.strategy !== "elim") return null;
-  if (run.strategy === "elim" && !run.elim) return null;
+  if (run.strategy === "elim" && !isElimV2(run.elim)) return null;
   normalizeEngine(run);
   return run;
+}
+
+function isElimV2(elim: ElimState | null): boolean {
+  if (!elim || elim.v !== 2 || !Array.isArray(elim.trees) || elim.trees.length === 0) return false;
+  return elim.trees.every((tree) => Array.isArray(tree?.matches));
 }
 
 export function saveRun(engine: EngineState): void {
@@ -61,4 +73,19 @@ export function clearRun(): void {
   } catch {
     // Ignore storage failures.
   }
+}
+
+export function loadReview(): BracketReview | null {
+  const review = readJson<BracketReview>(REVIEW_KEY);
+  if (!review || !Array.isArray(review.ranked) || !isElimV2(review.elim)) return null;
+  return review;
+}
+
+export function saveReview(review: BracketReview): void {
+  writeJson(REVIEW_KEY, review);
+}
+
+export function reviewMatches(review: BracketReview | null, ranked: number[]): boolean {
+  if (!review || review.ranked.length !== ranked.length) return false;
+  return review.ranked.every((index, place) => index === ranked[place]);
 }

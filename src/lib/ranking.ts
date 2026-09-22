@@ -55,7 +55,7 @@ export interface EngineState {
   /** Every matchup this run has shown, including decided ones. */
   archive: BracketColumn[];
   currentBye: string | null;
-  /** Set when bracket mode is a single-elimination playoff. */
+  /** Set when bracket mode is winners, losers, then a top cut. */
   elim: ElimState | null;
 }
 

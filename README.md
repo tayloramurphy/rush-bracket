@@ -26,19 +26,19 @@ Before you start, drop whole albums or individual songs. Every exclusion is reve
 Two play modes produce the same kind of result:
 
 - **Swipe** — one matchup at a time. Tap a song or flick it sideways. Keys `1` and `2`, `Z` to undo.
-- **Bracket** — a playoff tree. Each match is a pair of slots joined by lines to the next round. The winner moves along the line; an empty slot says TBD, centered in that slot. The match you’re on stays pinned at the top. Drag to pan, and zoom if the field is large. Full places every song. Quick and Standard crown a champion, then sort the top and bottom.
+- **Bracket** — a winners bracket, then a second-chance losers bracket, then a short final cut (top 20 on Full, smaller on Quick and Standard). Early one-and-done exits settle the bottom. Pools of about 20 songs or fewer are a single playoff. Each match is a pair of slots joined by lines to the next round. The winner moves along the line; an empty slot says TBD, centered in that slot. The match you’re on stays pinned at the top. Drag to pan, and zoom if the field is large. Switch trees with the tabs. After the results card, **View bracket** reopens the finished trees.
 
 Depth:
 
 | Depth | Swipe | Bracket |
 | --- | --- | --- |
-| Quick | A few Swiss rounds, then one ordering pass over the top and bottom (~180) | Championship playoff, then the top 10 and bottom 10 |
-| Standard | More rounds and a longer pass on both ends (~390) | The same playoff, with a longer pass on both ends |
-| **Full** (default) | A complete ranking, favorite to least favorite (~1,050) | A complete playoff ranking |
+| Quick | A few Swiss rounds, then one ordering pass over the top and bottom (~180) | Winners, a shorter losers path, then a top-10 cut |
+| Standard | More rounds and a longer pass on both ends (~390) | The same path, with a top-16 cut |
+| **Full** (default) | A complete ranking, favorite to least favorite (~1,050) | Winners, losers, then a top-20 cut |
 
 Small pools use a complete ranking even on Quick or Standard, because it is short. Progress is saved in `localStorage` until the run finishes. You can leave and resume on the same device.
 
-Swipe Full is a pairwise merge of the shuffled pool, so the final order is a real total ranking. Swipe Quick and Standard keep wins, opponent strength, and an Elo tiebreak, then bubble the top and bottom. Bracket mode is a single-elimination playoff: each winner moves along a line into the next round, then later rounds place the top and the bottom — or the whole field, on Full.
+Swipe Full is a pairwise merge of the shuffled pool, so the final order is a real total ranking. Swipe Quick and Standard keep wins, opponent strength, and an Elo tiebreak, then bubble the top and bottom. Bracket mode follows a sports bracket: winners drop losers out of that path, those losers get a second-chance tree, and the survivors are reseeded into a final cut that crowns the favorite and the top of the list. Songs that lose their first real match play a simpler bottom bracket for least favorite. It is not a full sort of every song.
 
 ## Sharing
 

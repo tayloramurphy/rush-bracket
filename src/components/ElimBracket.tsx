@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { requireSong } from "../lib/catalog";
-import type { ElimMatch, ElimState } from "../lib/elim";
+import { elimRoundLabel, type ElimMatch, type ElimPhase, type ElimState, type ElimTreeId } from "../lib/elim";
 import { availableMatches, type EngineState } from "../lib/ranking";
 
 const SLOT_H = 36;
@@ -14,42 +14,57 @@ const ROW_GAP = 12;
 const HEADER = 28;
 
 interface ElimBracketProps {
-  engine: EngineState;
-  onChoose: (key: string, winner: string) => void;
+  engine?: EngineState;
+  elim?: ElimState;
+  onChoose?: (key: string, winner: string) => void;
+  readOnly?: boolean;
 }
 
-export function ElimBracket({ engine, onChoose }: ElimBracketProps) {
-  const elim = engine.elim;
+export function ElimBracket({ engine, elim: elimProp, onChoose, readOnly = false }: ElimBracketProps) {
+  const elim = elimProp ?? engine?.elim;
   if (!elim) return null;
-  return <ElimTree engine={engine} elim={elim} onChoose={onChoose} />;
+  const open = !readOnly && engine ? (availableMatches(engine)[0] ?? null) : null;
+  return (
+    <ElimTree
+      elim={elim}
+      open={open}
+      onChoose={onChoose}
+      readOnly={readOnly}
+      comparisons={engine?.comparisons ?? 0}
+    />
+  );
 }
 
 function ElimTree({
-  engine,
   elim,
+  open,
   onChoose,
+  readOnly,
+  comparisons,
 }: {
-  engine: EngineState;
   elim: ElimState;
-  onChoose: (key: string, winner: string) => void;
+  open: { key: string; a: string; b: string } | null;
+  onChoose?: (key: string, winner: string) => void;
+  readOnly: boolean;
+  comparisons: number;
 }) {
-  const open = availableMatches(engine)[0] ?? null;
-  const [showChampionship, setShowChampionship] = useState(false);
-  const viewingFrozen = showChampionship && elim.championship != null;
-  const matches = viewingFrozen ? elim.championship! : elim.matches;
+  const [viewId, setViewId] = useState<ElimTreeId>(() => initialTree(elim, readOnly));
+  const tree = elim.trees.find((item) => item.id === viewId) ?? elim.trees[0];
+  const matches = tree?.matches ?? [];
   const layout = useMemo(() => layoutMatches(matches), [matches]);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState({ x: 12, y: 12, scale: 1 });
   const viewRef = useRef(view);
   viewRef.current = view;
-  const followRef = useRef(true);
-  const [follow, setFollow] = useState(true);
+  const followRef = useRef(!readOnly);
+  const [follow, setFollow] = useState(!readOnly);
   const drag = useRef<{ x: number; y: number; ox: number; oy: number; moved: boolean } | null>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const pinch = useRef<{ distance: number; scale: number } | null>(null);
-  const previous = useRef(elim.matches);
+  const previous = useRef<{ id: string; matches: ElimMatch[] }>({ id: tree?.id ?? "", matches });
 
-  const treeKey = `${viewingFrozen ? "championship" : elim.region}:${matches.length}`;
+  const playing = !readOnly && elim.phase !== "done" && viewId === elim.phase;
+  const treeKey = `${tree?.id ?? "none"}:${matches.length}:${readOnly ? "review" : "play"}`;
 
   function focusMatch(matchId: string | null, scale = viewRef.current.scale) {
     const node = viewportRef.current;
@@ -108,14 +123,34 @@ function ElimTree({
     focusMatch(matchId, 1);
   }
 
+  function showTree(id: ElimTreeId) {
+    setViewId(id);
+    const stay = !readOnly && id === elim.phase;
+    followRef.current = stay;
+    setFollow(stay);
+  }
+
+  useEffect(() => {
+    if (elim.trees.some((item) => item.id === viewId)) return;
+    const fallback =
+      elim.phase !== "done" && elim.trees.some((item) => item.id === elim.phase) ? elim.phase : elim.trees[0]?.id;
+    if (fallback) setViewId(fallback);
+  }, [elim, viewId]);
+
+  useEffect(() => {
+    if (readOnly || elim.phase === "done") return;
+    if (!elim.trees.some((item) => item.id === elim.phase)) return;
+    setViewId(elim.phase);
+    followRef.current = true;
+    setFollow(true);
+  }, [elim.phase, readOnly]);
+
   useEffect(() => {
     const node = viewportRef.current;
     if (!node) return;
-    followRef.current = true;
-    setFollow(true);
-    const target = viewingFrozen ? (matches.find((match) => match.round === layout.rounds - 1)?.id ?? null) : (open?.key ?? null);
+    const target = playing ? (open?.key ?? null) : (matches.find((match) => match.round === layout.rounds - 1)?.id ?? null);
     const frame = () => {
-      if (followRef.current) frameTree(target);
+      if (followRef.current || readOnly) frameTree(target);
     };
     const raf = requestAnimationFrame(frame);
     const observer = new ResizeObserver(frame);
@@ -130,18 +165,18 @@ function ElimTree({
 
   useEffect(() => {
     const before = previous.current;
-    previous.current = elim.matches;
-    if (viewingFrozen || !followRef.current) return;
-    const advanced = elim.matches
+    previous.current = { id: tree?.id ?? "", matches };
+    if (readOnly || !playing || !followRef.current || before.id !== tree?.id) return;
+    const advanced = matches
       .filter((match) => {
-        const old = before.find((item) => item.id === match.id);
+        const old = before.matches.find((item) => item.id === match.id);
         if (!old) return false;
         return (old.a !== match.a || old.b !== match.b) && Boolean(match.a || match.b);
       })
       .sort((a, b) => b.round - a.round)[0];
     frameTree(advanced?.id ?? open?.key ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [engine.comparisons]);
+  }, [comparisons]);
 
   useEffect(() => {
     const node = viewportRef.current;
@@ -153,14 +188,22 @@ function ElimTree({
       followRef.current = false;
       setFollow(false);
     }
+    function onSelectStart(event: Event) {
+      event.preventDefault();
+    }
     node.addEventListener("wheel", onWheel, { passive: false });
-    return () => node.removeEventListener("wheel", onWheel);
+    node.addEventListener("selectstart", onSelectStart);
+    return () => {
+      node.removeEventListener("wheel", onWheel);
+      node.removeEventListener("selectstart", onSelectStart);
+    };
     // zoomAt reads refs; the listener is bound once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     if ((event.target as HTMLElement).closest("button")) return;
+    window.getSelection()?.removeAllRanges();
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     event.currentTarget.setPointerCapture(event.pointerId);
     if (pointers.current.size === 2) {
@@ -192,6 +235,7 @@ function ElimTree({
     const dx = event.clientX - current.x;
     const dy = event.clientY - current.y;
     if (Math.hypot(dx, dy) > 4) current.moved = true;
+    if (current.moved) window.getSelection()?.removeAllRanges();
     setView((value) => ({ ...value, x: current.ox + dx, y: current.oy + dy }));
     if (current.moved) {
       followRef.current = false;
@@ -206,34 +250,23 @@ function ElimTree({
   }
 
   function jumpToCurrent() {
+    if (elim.phase === "done" || !elim.trees.some((item) => item.id === elim.phase)) return;
     followRef.current = true;
     setFollow(true);
-    setShowChampionship(false);
+    setViewId(elim.phase);
     focusMatch(open?.key ?? null, Math.max(viewRef.current.scale, 1));
   }
 
   const wires = wiresFor(matches, layout.pos);
-  const openRound = elim.matches.find((match) => match.id === open?.key)?.round;
-  const placeLabel =
-    elim.region === "basement"
-      ? `Bottom ${elim.bottom.length + 1}`
-      : elim.top.length > 0
-        ? `For #${elim.top.length + 1}`
-        : openRound == null
-          ? "Playoff"
-          : `Round ${openRound + 1}`;
+  const label = elimRoundLabel(elim);
 
   return (
-    <div className="elim-app" data-testid="elim-board">
-      {open && (
+    <div className="elim-app" data-testid="elim-board" data-phase={elim.phase} data-tree={tree?.id ?? ""} data-readonly={readOnly ? "true" : "false"}>
+      {open && onChoose && (
         <section className="faceoff" aria-label="Now playing" data-testid="elim-faceoff">
           <div className="faceoff-head">
-            <strong>Now playing · {placeLabel}</strong>
-            <span>
-              {elim.region === "basement"
-                ? "Tap the song you like more. The other one drops along the line."
-                : "Tap the winner. They move along the line into the next round."}
-            </span>
+            <strong>{label}</strong>
+            <span>{faceoffHint(elim.phase)}</span>
           </div>
           <div className="faceoff-pair">
             <FaceoffSide songId={open.a} hotkey="1" onPick={() => onChoose(open.key, open.a)} />
@@ -243,6 +276,20 @@ function ElimTree({
       )}
 
       <div className="elim-tools">
+        <div className="b-tabs elim-tabs" role="tablist" aria-label="Brackets" data-testid="elim-tabs">
+          {elim.trees.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={item.id === tree?.id}
+              className={item.id === tree?.id ? "is-on" : ""}
+              onClick={() => showTree(item.id)}
+            >
+              {treeName(elim, item.id)}
+            </button>
+          ))}
+        </div>
         <button type="button" className="b-tool" onClick={() => zoomAt(viewportCenter(viewportRef.current).x, viewportCenter(viewportRef.current).y, view.scale / 1.2)}>
           Zoom out
         </button>
@@ -252,12 +299,9 @@ function ElimTree({
         <button type="button" className="b-tool" onClick={fit}>
           Fit
         </button>
-        <button type="button" className={`b-tool ${follow && !viewingFrozen ? "is-on" : ""}`} onClick={jumpToCurrent}>
-          Current match
-        </button>
-        {elim.championship && (
-          <button type="button" className={`b-tool ${viewingFrozen ? "is-on" : ""}`} onClick={() => setShowChampionship((value) => !value)}>
-            {viewingFrozen ? "Back to play" : "Championship"}
+        {!readOnly && (
+          <button type="button" className={`b-tool ${follow && playing ? "is-on" : ""}`} onClick={jumpToCurrent}>
+            Current match
           </button>
         )}
       </div>
@@ -269,6 +313,7 @@ function ElimTree({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onDragStart={(event) => event.preventDefault()}
       >
         <div
           className="elim-world"
@@ -281,13 +326,13 @@ function ElimTree({
           </svg>
           {Array.from({ length: layout.rounds }, (_, round) => (
             <h2 key={round} className="elim-round" style={{ left: round * COL_W }}>
-              {roundTitle(round, layout.rounds)}
+              {roundTitle(round, layout.rounds, tree?.id ?? "winners")}
             </h2>
           ))}
           {matches.map((match) => {
             const pos = layout.pos.get(match.id);
             if (!pos) return null;
-            const live = !viewingFrozen && open?.key === match.id;
+            const live = playing && open?.key === match.id;
             return (
               <MatchBox
                 key={match.id}
@@ -296,9 +341,9 @@ function ElimTree({
                 x={pos.x}
                 y={pos.y}
                 live={live}
-                readOnly={viewingFrozen}
-                basement={elim.region === "basement" && !viewingFrozen}
-                onChoose={onChoose}
+                readOnly={!playing}
+                basement={tree?.id === "bottom"}
+                onChoose={onChoose ?? (() => undefined)}
               />
             );
           })}
@@ -345,11 +390,29 @@ function ElimTree({
   );
 }
 
+function initialTree(elim: ElimState, readOnly: boolean): ElimTreeId {
+  if (!readOnly && elim.phase !== "done" && elim.trees.some((item) => item.id === elim.phase)) return elim.phase;
+  return elim.trees.find((item) => item.id === "topcut")?.id ?? elim.trees[0]?.id ?? "winners";
+}
+
+function treeName(elim: ElimState, id: ElimTreeId): string {
+  if (id === "winners") return elim.pool.length <= 20 ? "Playoff" : "Winners";
+  if (id === "losers") return "Losers";
+  if (id === "topcut") return `Top ${elim.topCutSize}`;
+  return "Bottom";
+}
+
+function faceoffHint(phase: ElimPhase): string {
+  if (phase === "bottom") return "Tap the song you like more. The other one drops along the line.";
+  if (phase === "losers") return "Second chance. Tap who should stay alive. They move along the line.";
+  return "Tap the winner. They move along the line into the next round.";
+}
+
 function FaceoffSide({ songId, hotkey, onPick }: { songId: string; hotkey: string; onPick: () => void }) {
   const song = requireSong(songId);
   return (
     <button type="button" className="faceoff-side" onClick={onPick}>
-      <img src={song.cover} alt="" width={64} height={64} />
+      <img src={song.cover} alt="" width={64} height={64} draggable={false} />
       <span>
         <span className="faceoff-title">{song.title}</span>
         <span className="faceoff-album">{song.album}</span>
@@ -438,7 +501,7 @@ function Slot({
   const className = `elim-slot is-song ${winner ? "is-winner" : ""} ${loser ? "is-loser" : ""} ${arrived ? "is-arrived" : ""}`;
   const body = (
     <>
-      <img src={song.cover} alt="" width={28} height={28} />
+      <img src={song.cover} alt="" width={28} height={28} draggable={false} />
       <span className="elim-name">
         {winner && <span className="sr-only">{basement ? "Drops. " : "Winner. "}</span>}
         {loser && <span className="sr-only">{basement ? "Stays. " : "Lost this match. "}</span>}
@@ -507,8 +570,9 @@ function wiresFor(matches: ElimMatch[], pos: Map<string, { x: number; y: number 
   return wires;
 }
 
-function roundTitle(round: number, rounds: number): string {
+function roundTitle(round: number, rounds: number, treeId: ElimTreeId): string {
   const fromEnd = rounds - 1 - round;
+  if (treeId === "topcut" && fromEnd === 1) return "Final Four";
   if (fromEnd === 0) return "Final";
   if (fromEnd === 1) return "Semifinal";
   if (fromEnd === 2 && rounds > 3) return "Quarterfinal";

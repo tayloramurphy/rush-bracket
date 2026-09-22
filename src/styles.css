@@ -698,7 +698,14 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   letter-spacing: 0.02em;
 }
 .faceoff-album { display: block; color: var(--gold); font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 3px; }
-.elim-tools { display: flex; flex-wrap: wrap; gap: 6px; flex: none; }
+.elim-tools { display: flex; flex-wrap: wrap; gap: 6px; flex: none; align-items: center; }
+.elim-tabs { flex: 1 1 220px; }
+.elim-viewport,
+.elim-viewport * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 .elim-viewport {
   position: relative;
   flex: 1;

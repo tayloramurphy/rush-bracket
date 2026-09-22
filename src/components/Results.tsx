@@ -8,9 +8,10 @@ interface ResultsProps {
   result: ResultPayload;
   shared: boolean;
   onHome: () => void;
+  onViewBracket?: () => void;
 }
 
-export function Results({ result, shared, onHome }: ResultsProps) {
+export function Results({ result, shared, onHome, onViewBracket }: ResultsProps) {
   const ranked = useMemo(
     () => result.ranked.map((index) => songByIndex.get(index)).filter((song): song is Song => Boolean(song)),
     [result],
@@ -146,6 +147,11 @@ export function Results({ result, shared, onHome }: ResultsProps) {
       </div>
 
       <div className="start-bar">
+        {onViewBracket && (
+          <button type="button" className="ghost xl" data-testid="view-bracket" onClick={onViewBracket}>
+            View bracket
+          </button>
+        )}
         <button type="button" className="primary xl" onClick={onHome}>
           {shared ? "Rank yours" : "Rank again"}
         </button>
