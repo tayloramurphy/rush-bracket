@@ -26,19 +26,19 @@ Before you start, drop whole albums or individual songs. Every exclusion is reve
 Two play modes produce the same kind of result:
 
 - **Swipe** — one matchup at a time. Tap a song or flick it sideways. Keys `1` and `2`, `Z` to undo.
-- **Bracket** — a round-by-round board. Open matchups are live; decided ones stay on the board with the winner moving into the next slot. Scroll the rounds, or jump with the round tabs. Tap a side to pick.
+- **Bracket** — a playoff tree. Each match is a pair of slots joined by lines to the next round. The winner moves along the line; an empty slot says TBD, centered in that slot. The match you’re on stays pinned at the top. Drag to pan, and zoom if the field is large. Full places every song. Quick and Standard crown a champion, then sort the top and bottom.
 
 Depth:
 
-| Depth | What it does | Full discography, roughly |
+| Depth | Swipe | Bracket |
 | --- | --- | --- |
-| Quick | A few Swiss rounds, then one ordering pass over the top and bottom | ~180 matchups |
-| Standard | More rounds and a longer pass on both ends | ~390 matchups |
-| **Full** (default) | A complete ranking. Every song gets a place from favorite to least favorite | ~1,050 matchups |
+| Quick | A few Swiss rounds, then one ordering pass over the top and bottom (~180) | Championship playoff, then the top 10 and bottom 10 |
+| Standard | More rounds and a longer pass on both ends (~390) | The same playoff, with a longer pass on both ends |
+| **Full** (default) | A complete ranking, favorite to least favorite (~1,050) | A complete playoff ranking |
 
 Small pools use a complete ranking even on Quick or Standard, because it is short. Progress is saved in `localStorage` until the run finishes. You can leave and resume on the same device.
 
-Full mode is a pairwise merge of the shuffled pool, so the final order is a real total ranking. Quick and Standard keep wins, opponent strength, and an Elo tiebreak, then bubble the top and bottom so both ends are earned by direct picks.
+Swipe Full is a pairwise merge of the shuffled pool, so the final order is a real total ranking. Swipe Quick and Standard keep wins, opponent strength, and an Elo tiebreak, then bubble the top and bottom. Bracket mode is a single-elimination playoff: each winner moves along a line into the next round, then later rounds place the top and the bottom — or the whole field, on Full.
 
 ## Sharing
 

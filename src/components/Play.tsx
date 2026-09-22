@@ -4,6 +4,7 @@ import { requireSong } from "../lib/catalog";
 import { availableMatches, progressOf, type EngineState, type Matchup } from "../lib/ranking";
 import type { Song } from "../types";
 import { BracketBoard } from "./BracketBoard";
+import { ElimBracket } from "./ElimBracket";
 import { StarMark } from "./StarMark";
 
 interface PlayProps {
@@ -78,20 +79,24 @@ export function Play({ engine, canUndo, onChoose, onUndo, onExit }: PlayProps) {
             ? `${progress.roundLabel}. ${left.title} or ${right.title}. ${matches.length} open matchup${matches.length === 1 ? "" : "s"}.`
             : "Ranking complete"}
         </p>
-        <h1>{engine.mode === "swipe" ? "Which one wins?" : "Bracket"}</h1>
-        {engine.mode === "bracket" && (
-          <p className="hint">
-            Pick a side in the open match. Winners move ahead, and finished rounds stay on the board. Keys 1 and 2, Z undoes.
-          </p>
-        )}
+        {engine.mode === "swipe" && <h1>Which one wins?</h1>}
         {engine.mode === "swipe" && (
           <p className="hint">Tap the song you prefer, or flick it sideways. Keys 1 and 2. Z undoes.</p>
+        )}
+        {engine.mode === "bracket" && engine.strategy !== "elim" && (
+          <>
+            <h1>Bracket</h1>
+            <p className="hint">
+              Pick a side in the open match. Winners move ahead, and finished rounds stay on the board. Keys 1 and 2, Z undoes.
+            </p>
+          </>
         )}
 
         {engine.mode === "swipe" && matches[0] && (
           <SwipeArena match={matches[0]} onChoose={(winner) => onChoose(matches[0]!.key, winner)} />
         )}
-        {engine.mode === "bracket" && <BracketBoard engine={engine} onChoose={onChoose} />}
+        {engine.mode === "bracket" && engine.strategy === "elim" && <ElimBracket engine={engine} onChoose={onChoose} />}
+        {engine.mode === "bracket" && engine.strategy !== "elim" && <BracketBoard engine={engine} onChoose={onChoose} />}
       </main>
     </div>
   );

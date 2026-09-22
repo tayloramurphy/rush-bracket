@@ -22,7 +22,7 @@ const modes: { id: Mode; title: string; copy: string }[] = [
   {
     id: "bracket",
     title: "Bracket",
-    copy: "A randomly seeded tournament. Pick the winners round by round.",
+    copy: "A seeded playoff. Winners move along the bracket lines.",
   },
 ];
 
@@ -57,7 +57,7 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
   }, [mode, depth, name, excluded]);
 
   const pool = useMemo(() => songs.filter((song) => !excluded.has(song.id)), [excluded]);
-  const plan = previewPlan(pool.length, depth);
+  const plan = previewPlan(pool.length, depth, mode);
   const albumsOut = albums.filter((album) => album.tracks.every((track) => excluded.has(track.id))).length;
 
   function onlyAlbum(albumId: string) {
@@ -158,8 +158,16 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
         </div>
         <div className="choice-grid three" role="radiogroup" aria-label="Ranking depth">
           {depths.map((item) => {
-            const info = previewPlan(Math.max(pool.length, 2), item.id);
+            const info = previewPlan(Math.max(pool.length, 2), item.id, mode);
             const small = pool.length >= 2 && item.id !== "full" && info.complete;
+            const copy =
+              mode === "bracket" && item.id === "full"
+                ? "A full playoff. Every song ends up with a place."
+                : mode === "bracket" && item.id === "standard"
+                  ? "The championship bracket, then a longer pass on the top and bottom."
+                  : mode === "bracket"
+                    ? "The championship bracket, then the top 10 and bottom 10."
+                    : item.copy;
             return (
               <button
                 key={item.id}
@@ -170,7 +178,7 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
                 onClick={() => setDepth(item.id)}
               >
                 <span className="select-title">{item.title}</span>
-                <span>{small ? "This pool is small, so every song gets a complete place." : item.copy}</span>
+                <span>{small ? "This pool is small, so every song gets a complete place." : copy}</span>
                 <span className="estimate">
                   {pool.length < 2 ? "Need 2 songs" : `~${info.estimate} matchups · ~${minutesFor(info.estimate)} min`}
                 </span>
@@ -287,7 +295,9 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
         <p>
           {plan.complete
             ? "This run builds a complete order, favorite down to least favorite."
-            : "Wins, losses, and a final pass over the top and bottom produce the same kind of result card."}
+            : mode === "bracket"
+              ? "The playoff crowns a favorite, then sorts out the top and the bottom."
+              : "Wins, losses, and a final pass over the top and bottom produce the same kind of result card."}
         </p>
       </div>
 

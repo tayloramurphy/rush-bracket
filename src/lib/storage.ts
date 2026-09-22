@@ -45,7 +45,8 @@ export function saveSetup(setup: SetupPrefs): void {
 export function loadRun(): EngineState | null {
   const run = readJson<EngineState>(RUN_KEY);
   if (!run || run.v !== 1 || !Array.isArray(run.ids) || run.ids.length < 2 || run.done) return null;
-  if (run.strategy !== "merge" && run.strategy !== "swiss") return null;
+  if (run.strategy !== "merge" && run.strategy !== "swiss" && run.strategy !== "elim") return null;
+  if (run.strategy === "elim" && !run.elim) return null;
   normalizeEngine(run);
   return run;
 }

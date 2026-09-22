@@ -1,4 +1,5 @@
 import type { Depth, Mode } from "../types";
+import { chooseElim, createElim, elimOpen, elimPlan, elimRanking, elimRoundLabel, type ElimState } from "./elim";
 
 export interface MergeSlot {
   left: string[];
@@ -28,7 +29,7 @@ export interface EngineState {
   ids: string[];
   mode: Mode;
   depth: Depth;
-  strategy: "merge" | "swiss";
+  strategy: "merge" | "swiss" | "elim";
   ratings: Record<string, number>;
   wins: Record<string, number>;
   losses: Record<string, number>;
@@ -54,6 +55,8 @@ export interface EngineState {
   /** Every matchup this run has shown, including decided ones. */
   archive: BracketColumn[];
   currentBye: string | null;
+  /** Set when bracket mode is a single-elimination playoff. */
+  elim: ElimState | null;
 }
 
 export interface Matchup {
@@ -104,7 +107,7 @@ export interface BracketView {
 }
 
 export interface PlanInfo {
-  strategy: "merge" | "swiss";
+  strategy: "merge" | "swiss" | "elim";
   estimate: number;
   rounds: number;
   bubblePasses: number;
@@ -149,8 +152,19 @@ function swissEstimate(n: number, rounds: number, passes: number, window: number
   return games + perPass * passes;
 }
 
-/** How many decisions a depth asks for. Small pools always use a full sort. */
-export function previewPlan(n: number, depth: Depth): PlanInfo {
+/** How many decisions a depth asks for. Small pools always use a full sort. Bracket mode is a playoff tree. */
+export function previewPlan(n: number, depth: Depth, mode: Mode = "swipe"): PlanInfo {
+  if (mode === "bracket") {
+    const plan = elimPlan(Math.max(0, n), depth);
+    return {
+      strategy: "elim",
+      estimate: plan.estimate,
+      rounds: plan.rounds,
+      bubblePasses: 0,
+      bubbleWindow: plan.bottomTarget,
+      complete: plan.complete,
+    };
+  }
   const full = mergeEstimate(n);
   if (n < 2) {
     return { strategy: "merge", estimate: 0, rounds: 0, bubblePasses: 0, bubbleWindow: 0, complete: true };
@@ -387,7 +401,7 @@ function markArchiveWinner(state: EngineState, a: string, b: string, winner: str
 
 function seedArchive(state: EngineState): void {
   if (!state.archive) state.archive = [];
-  if (state.archive.length > 0 || state.done) return;
+  if (state.strategy === "elim" || state.archive.length > 0 || state.done) return;
   if (state.strategy === "merge") syncMergeColumn(state);
   else if (state.phase === "bubble") syncBubbleColumn(state);
   else syncSwissColumn(state);
@@ -565,7 +579,7 @@ export function createEngine(
   if (ids.length < 2) throw new Error("Pick at least two songs");
   if (new Set(ids).size !== ids.length) throw new Error("Duplicate songs in the pool");
   const shuffled = shuffle(ids, random);
-  const plan = previewPlan(ids.length, depth);
+  const plan = previewPlan(ids.length, depth, mode);
   const state: EngineState = {
     v: 1,
     ids: shuffled,
@@ -596,7 +610,15 @@ export function createEngine(
     bubbleWindow: plan.bubbleWindow,
     archive: [],
     currentBye: null,
+    elim: null,
   };
+  if (mode === "bracket") {
+    state.strategy = "elim";
+    state.elim = createElim(shuffled, depth);
+    state.estimate = state.elim.estimate;
+    state.done = state.elim.done;
+    return state;
+  }
   if (plan.strategy === "merge") openMerges(state);
   else dealSwiss(state);
   return state;
@@ -604,6 +626,7 @@ export function createEngine(
 
 export function availableMatches(state: EngineState): Matchup[] {
   if (state.done) return [];
+  if (state.strategy === "elim" && state.elim) return elimOpen(state.elim);
   if (state.strategy === "merge") {
     const matches: Matchup[] = [];
     state.merges.forEach((slot, index) => {
@@ -670,6 +693,12 @@ export function bracketBoard(state: EngineState): BracketView {
 
 export function applyChoice(prev: EngineState, key: string, winnerId: string): EngineState {
   const state = structuredClone(prev);
+  if (state.strategy === "elim" && state.elim) {
+    chooseElim(state.elim, key, winnerId);
+    state.comparisons += 1;
+    state.done = state.elim.done;
+    return state;
+  }
   normalizeEngine(state);
   const match = availableMatches(state).find((item) => item.key === key);
   if (!match) throw new Error("That matchup is no longer open");
@@ -690,6 +719,7 @@ export function applyChoice(prev: EngineState, key: string, winnerId: string): E
 }
 
 export function finalRanking(state: EngineState): string[] {
+  if (state.strategy === "elim" && state.elim) return elimRanking(state.elim);
   if (state.strategy === "merge" && state.done) return state.runs[0] ?? [];
   if (state.bubble) return state.bubble.order;
   return standings(state);
@@ -699,7 +729,9 @@ export function progressOf(state: EngineState): Progress {
   const estimate = Math.max(1, state.estimate);
   const ratio = state.done ? 1 : Math.min(0.98, state.comparisons / estimate);
   let roundLabel: string;
-  if (state.strategy === "merge") {
+  if (state.strategy === "elim" && state.elim) {
+    roundLabel = elimRoundLabel(state.elim);
+  } else if (state.strategy === "merge") {
     roundLabel = `Round ${Math.min(state.mergeRound, state.mergeRounds)} of ${state.mergeRounds}`;
   } else if (state.phase === "bubble") {
     roundLabel = state.bubble?.region === "bottom" ? "Settling the bottom 10" : "Settling the top 10";
