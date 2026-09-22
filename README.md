@@ -52,7 +52,7 @@ Album artwork is bundled with the app, so the card and the matchups work offline
 
 ## Deploy on Cloudflare Pages
 
-The project is a static Vite build. `wrangler.jsonc` points Pages at `dist/`, and `public/_redirects` sends unknown paths back to `index.html`.
+The project is a static Vite build. `wrangler.jsonc` points Pages at `dist/`. Share links are hashes on `/` (`/#r=...`), so the site does not need a rewrite rule.
 
 1. Build and deploy:
 

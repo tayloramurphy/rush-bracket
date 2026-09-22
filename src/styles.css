@@ -199,6 +199,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .album-meta { padding: 10px 12px 12px; }
 .album-meta h3 { font-size: 1rem; line-height: 1.2; }
 .album-meta p { color: var(--faint); font-size: 0.86rem; margin: 4px 0 8px; }
+.album-links { display: flex; gap: 14px; }
 .textish {
   background: none;
   border: 0;
@@ -426,11 +427,24 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   border: 0;
 }
 
+@media (max-width: 859px) {
+  .play-main { padding-top: 8px; }
+  .play-main h1 { margin: 0 0 4px; font-size: 1.7rem; }
+  .hint { margin-bottom: 8px; }
+  .arena { gap: 8px; }
+  .vs { display: flex; flex-direction: row; justify-content: center; gap: 8px; padding: 2px 0; }
+  .choice { min-height: 0; border-radius: 16px; }
+  .choice img { aspect-ratio: 1.7 / 1; max-height: 24vh; }
+  .choice-copy { padding: 8px 12px 10px; }
+  .choice .song-title { font-size: 1.25rem; }
+}
+
 @media (max-width: 640px) {
   .bar-inner { grid-template-columns: 1fr auto; }
   .progress-copy { grid-column: 1 / -1; }
-  .pair { grid-template-columns: 1fr; }
-  .side { grid-template-columns: 64px 1fr; }
+  .side { grid-template-columns: 52px 1fr; min-height: 72px; padding: 6px; }
+  .side img { width: 52px; height: 52px; }
+  .side .song-title { font-size: 0.92rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

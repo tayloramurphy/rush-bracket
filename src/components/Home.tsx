@@ -60,6 +60,11 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
   const plan = previewPlan(pool.length, depth);
   const albumsOut = albums.filter((album) => album.tracks.every((track) => excluded.has(track.id))).length;
 
+  function onlyAlbum(albumId: string) {
+    setExcluded(new Set(songs.filter((song) => song.albumId !== albumId).map((song) => song.id)));
+    setOpenAlbum(albumId);
+  }
+
   function toggleAlbum(albumId: string) {
     const album = albums.find((item) => item.id === albumId);
     if (!album) return;
@@ -230,14 +235,19 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
                     <p>
                       {album.year} · {album.tracks.length} tracks
                     </p>
-                    <button
-                      type="button"
-                      className="textish"
-                      aria-expanded={open}
-                      onClick={() => setOpenAlbum(open ? null : album.id)}
-                    >
-                      {open ? "Hide songs" : "Songs"}
-                    </button>
+                    <div className="album-links">
+                      <button
+                        type="button"
+                        className="textish"
+                        aria-expanded={open}
+                        onClick={() => setOpenAlbum(open ? null : album.id)}
+                      >
+                        {open ? "Hide songs" : "Songs"}
+                      </button>
+                      <button type="button" className="textish" onClick={() => onlyAlbum(album.id)}>
+                        Only
+                      </button>
+                    </div>
                   </div>
                 </div>
                 {open && (
