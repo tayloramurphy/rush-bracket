@@ -323,7 +323,7 @@ function Side({
     <>
       <img src={song.cover} alt="" width={64} height={64} />
       <span className="b-copy">
-        {winner && <span className="sr-only">Winner. </span>}
+        {winner && <span className="sr-only">You liked this more. </span>}
         {loser && <span className="sr-only">Lost this match. </span>}
         <span className="b-title">{song.title}</span>
         <span className="b-album">{song.album}</span>

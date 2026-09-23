@@ -674,6 +674,37 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   font-size: 0.95rem;
 }
 .faceoff-head span { color: var(--muted); font-size: 0.82rem; }
+.faceoff-blurb {
+  margin: 0 4px 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+.faceoff-choose { color: var(--ink); font-weight: 600; }
+.elim-help {
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: rgba(7, 9, 15, 0.94);
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+.elim-help p { margin: 0 0 6px; }
+.elim-help ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
+.elim-help strong, .bracket-guide strong { color: var(--ink); font-weight: 600; }
+.elim-help li.is-now strong { color: var(--gold); }
+.bracket-guide {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.bracket-guide p { margin: 0; }
+.bracket-guide ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 4px; }
 .faceoff-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .faceoff-side {
   position: relative;

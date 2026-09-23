@@ -25,8 +25,8 @@ Before you start, drop whole albums or individual songs. Every exclusion is reve
 
 Two play modes produce the same kind of result:
 
-- **Swipe** — one matchup at a time. Tap a song or flick it sideways. Keys `1` and `2`, `Z` to undo.
-- **Bracket** — a winners bracket, then a second-chance losers bracket, then a short final cut (top 20 on Full, smaller on Quick and Standard). Early one-and-done exits settle the bottom. Pools of about 20 songs or fewer are a single playoff. Each match is a pair of slots joined by lines to the next round. The winner moves along the line; an empty slot says TBD, centered in that slot. The match you’re on stays pinned at the top. Drag to pan, and zoom if the field is large. Switch trees with the tabs. After the results card, **View bracket** reopens the finished trees.
+- **Swipe** — one matchup at a time. Tap the song you like more, or flick it sideways. Keys `1` and `2`, `Z` to undo.
+- **Bracket** — a winners bracket, then a second-chance losers bracket, then a short final cut (top 20 on Full, smaller on Quick and Standard). Early one-and-done exits settle the bottom. Pools of about 20 songs or fewer are a single playoff. Every tap is still the song you like more. The app places favorites and least favorites from those picks. Each match is a pair of slots joined by lines to the next round. The song you like moves along the line; an empty slot says TBD, centered in that slot. The match you’re on stays pinned at the top, with a line explaining the current bracket. Drag to pan, and zoom if the field is large. Switch trees with the tabs. **How this works** lists all four brackets. After the results card, **View bracket** reopens the finished trees.
 
 Depth:
 

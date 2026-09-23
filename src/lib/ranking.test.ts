@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { songs } from "./catalog";
-import { elimRoundLabel } from "./elim";
+import { bracketGuide, elimRoundLabel, phaseCopy } from "./elim";
 import { progressOf, applyChoice, availableMatches, createEngine, finalRanking, previewPlan, type EngineState } from "./ranking";
 import { decodeResult, encodeResult, resultFromEngine } from "./share";
 import { clearRun, loadRun, saveRun } from "./storage";
@@ -163,6 +163,31 @@ describe("playoff bracket", () => {
       expect(ranking.slice(0, 10)).toHaveLength(10);
       expect(ranking.slice(-10)).toHaveLength(10);
     }
+  });
+
+  it("tells every phase to pick the song you like more", () => {
+    const ids = Array.from({ length: 48 }, (_, index) => String(index).padStart(2, "0"));
+    const elim = createEngine(ids, "bracket", "full", () => 0).elim!;
+    const phrases = [
+      phaseCopy(elim),
+      phaseCopy({ ...elim, phase: "losers" }),
+      phaseCopy({ ...elim, phase: "topcut" }),
+      phaseCopy({ ...elim, phase: "bottom" }),
+      phaseCopy({ ...elim, pool: ids.slice(0, 6), phase: "winners" }),
+    ];
+    for (const copy of phrases) {
+      const text = `${copy.choose} ${copy.about}`;
+      expect(text).toMatch(/like more/i);
+      expect(text).not.toMatch(/like less|like least|pick your least/i);
+    }
+    expect(phaseCopy({ ...elim, phase: "bottom" }).about).toMatch(/least favorite/);
+    const guide = bracketGuide(48, 20).map((item) => `${item.title} ${item.about}`).join(" ");
+    expect(guide).toMatch(/Winners/);
+    expect(guide).toMatch(/Losers/);
+    expect(guide).toMatch(/Top 20/);
+    expect(guide).toMatch(/Bottom/);
+    expect(guide).not.toMatch(/like less|like least/i);
+    expect(bracketGuide(6, 6).map((item) => item.title)).toEqual(["Playoff"]);
   });
 
   it("shares a finished bracket and resumes a v2 run", () => {

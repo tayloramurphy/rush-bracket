@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { albums, songs } from "../lib/catalog";
+import { bracketGuide, cutSize } from "../lib/elim";
 import { minutesFor, previewPlan, progressOf, type EngineState } from "../lib/ranking";
 import { loadSetup, saveSetup } from "../lib/storage";
 import type { Depth, Mode } from "../types";
@@ -17,12 +18,12 @@ const modes: { id: Mode; title: string; copy: string }[] = [
   {
     id: "swipe",
     title: "Swipe",
-    copy: "One head-to-head at a time. Tap or flick the song that wins.",
+    copy: "One head-to-head at a time. Tap or flick the song you like more.",
   },
   {
     id: "bracket",
     title: "Bracket",
-    copy: "Winners bracket, a second-chance losers bracket, then a top cut.",
+    copy: "Always tap the song you like more. Winners, a second chance, a top cut, and a bottom path do the rest.",
   },
 ];
 
@@ -149,6 +150,18 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
             </button>
           ))}
         </div>
+        {mode === "bracket" && (
+          <div className="bracket-guide" data-testid="home-bracket-guide">
+            <p>You always tap the song you like more. Those picks become your favorite, your top 10, your least favorite, and your bottom 10.</p>
+            <ul>
+              {bracketGuide(Math.max(pool.length, 2), cutSize(depth)).map((item) => (
+                <li key={item.id}>
+                  <strong>{item.title}.</strong> {item.about}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       <section className="panel" aria-labelledby="depth-heading">
@@ -162,7 +175,7 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
             const small = pool.length >= 2 && item.id !== "full" && info.complete;
             const copy =
               mode === "bracket" && pool.length >= 2 && pool.length <= 20
-                ? "This pool is one playoff. The winner is your favorite."
+                ? "One playoff. Tap the song you like more. Your favorite wins it."
                 : mode === "bracket" && item.id === "full"
                   ? "Winners, then a losers bracket, then a top-20 playoff."
                   : mode === "bracket" && item.id === "standard"
@@ -296,12 +309,12 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
         </button>
         <p>
           {plan.complete && mode === "swipe"
-            ? "This run builds a complete order, favorite down to least favorite."
+            ? "Each tap is the song you like more. This run places every song, favorite down to least favorite."
             : plan.complete && mode === "bracket"
-              ? "One playoff. The winner is your favorite, and earlier exits fill out the rest."
+              ? "Each tap is the song you like more. One playoff crowns your favorite, and earlier exits fill out the rest."
               : mode === "bracket"
-                ? "Winners, a losers bracket, then a short final cut. Early exits settle the bottom."
-                : "Wins, losses, and a final pass over the top and bottom produce the same kind of result card."}
+                ? "Each tap is the song you like more. Winners, losers, and the top cut crown your favorites. Early exits fill least favorite and the bottom 10."
+                : "Each tap is the song you like more. A last pass over both ends fills out the same kind of result card."}
         </p>
       </div>
 

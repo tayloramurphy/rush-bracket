@@ -163,7 +163,7 @@ export function App() {
               </button>
               <div className="progress-copy">
                 <strong>Bracket review</strong>
-                <span>Pan and zoom. Picks are closed.</span>
+                <span>Pan and zoom. Every pick was the song you liked more.</span>
               </div>
               <button
                 type="button"

@@ -76,19 +76,17 @@ export function Play({ engine, canUndo, onChoose, onUndo, onExit }: PlayProps) {
       <main className={`shell play-main ${engine.mode === "bracket" ? "bracket-main" : ""}`} id="content" tabIndex={-1}>
         <p className="sr-only" aria-live="polite">
           {left && right
-            ? `${progress.roundLabel}. ${left.title} or ${right.title}. ${matches.length} open matchup${matches.length === 1 ? "" : "s"}.`
+            ? `${progress.roundLabel}. Which do you like more, ${left.title} or ${right.title}? ${matches.length} open matchup${matches.length === 1 ? "" : "s"}.`
             : "Ranking complete"}
         </p>
-        {engine.mode === "swipe" && <h1>Which one wins?</h1>}
+        {engine.mode === "swipe" && <h1>Which do you like more?</h1>}
         {engine.mode === "swipe" && (
-          <p className="hint">Tap the song you prefer, or flick it sideways. Keys 1 and 2. Z undoes.</p>
+          <p className="hint">Tap the song you like more, or flick it sideways. Keys 1 and 2. Z undoes.</p>
         )}
         {engine.mode === "bracket" && engine.strategy !== "elim" && (
           <>
             <h1>Bracket</h1>
-            <p className="hint">
-              Pick a side in the open match. Winners move ahead, and finished rounds stay on the board. Keys 1 and 2, Z undoes.
-            </p>
+            <p className="hint">Tap the song you like more. Finished rounds stay on the board. Keys 1 and 2, Z undoes.</p>
           </>
         )}
 

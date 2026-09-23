@@ -147,6 +147,75 @@ export function phaseTitle(elim: ElimState): string {
   return "Winners";
 }
 
+const CHOOSE_MORE = "Tap the song you like more.";
+
+/** What this phase is for, and the only way to answer a match. */
+export function phaseCopy(elim: ElimState): { choose: string; about: string } {
+  if (elim.phase === "bottom") {
+    return {
+      choose: CHOOSE_MORE,
+      about: "Early exits. The other song drops toward least favorite, and those picks fill the bottom 10.",
+    };
+  }
+  if (elim.phase === "losers") {
+    return {
+      choose: CHOOSE_MORE,
+      about: "Second chance for songs that lost in the winners bracket. The one you like more stays on this path.",
+    };
+  }
+  if (elim.phase === "topcut") {
+    return {
+      choose: CHOOSE_MORE,
+      about: `Finalists re-seeded into a top ${elim.topCutSize}. These picks crown your favorite and the top 10.`,
+    };
+  }
+  if (elim.pool.length <= SMALL_POOL) {
+    return {
+      choose: CHOOSE_MORE,
+      about: "One playoff. The song you like more moves forward. Earlier exits fill out the rest of the list.",
+    };
+  }
+  return {
+    choose: CHOOSE_MORE,
+    about: "Main playoff. The song you like more moves forward. The other song leaves this path.",
+  };
+}
+
+/** Plain-language tour of every bracket a pool will actually play. */
+export function bracketGuide(poolSize: number, topCut: number): { id: string; title: string; about: string }[] {
+  if (poolSize <= SMALL_POOL) {
+    return [
+      {
+        id: "playoff",
+        title: "Playoff",
+        about: "One bracket. Tap the song you like more. Your favorite wins, and earlier exits fill out the rest.",
+      },
+    ];
+  }
+  return [
+    {
+      id: "winners",
+      title: "Winners",
+      about: "Main playoff. Tap the song you like more. The other song leaves this path.",
+    },
+    {
+      id: "losers",
+      title: "Losers",
+      about: "Songs that lost get another path. Still tap the one you like more.",
+    },
+    {
+      id: "topcut",
+      title: `Top ${topCut}`,
+      about: "Finalists are seeded again. Tap the song you like more to crown a favorite and the top 10.",
+    },
+    {
+      id: "bottom",
+      title: "Bottom",
+      about: "Early one-and-done exits. Tap the song you like more. The other song drops toward least favorite and the bottom 10.",
+    },
+  ];
+}
+
 function phaseRoundName(phase: ElimPhase, round: number, rounds: number): string {
   const fromEnd = rounds - 1 - round;
   if (phase === "topcut" && fromEnd === 1) return "Final Four";

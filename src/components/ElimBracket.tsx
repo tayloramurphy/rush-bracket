@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { requireSong } from "../lib/catalog";
-import { elimRoundLabel, type ElimMatch, type ElimPhase, type ElimState, type ElimTreeId } from "../lib/elim";
+import { bracketGuide, elimRoundLabel, phaseCopy, type ElimMatch, type ElimState, type ElimTreeId } from "../lib/elim";
 import { availableMatches, type EngineState } from "../lib/ranking";
 
 const SLOT_H = 36;
@@ -49,6 +49,7 @@ function ElimTree({
   comparisons: number;
 }) {
   const [viewId, setViewId] = useState<ElimTreeId>(() => initialTree(elim, readOnly));
+  const [helpOpen, setHelpOpen] = useState(false);
   const tree = elim.trees.find((item) => item.id === viewId) ?? elim.trees[0];
   const matches = tree?.matches ?? [];
   const layout = useMemo(() => layoutMatches(matches), [matches]);
@@ -259,19 +260,38 @@ function ElimTree({
 
   const wires = wiresFor(matches, layout.pos);
   const label = elimRoundLabel(elim);
+  const copy = phaseCopy(elim);
+  const guide = bracketGuide(elim.pool.length, elim.topCutSize);
 
   return (
     <div className="elim-app" data-testid="elim-board" data-phase={elim.phase} data-tree={tree?.id ?? ""} data-readonly={readOnly ? "true" : "false"}>
       {open && onChoose && (
-        <section className="faceoff" aria-label="Now playing" data-testid="elim-faceoff">
+        <section className="faceoff" aria-label="Now playing. Tap the song you like more." data-testid="elim-faceoff">
           <div className="faceoff-head">
             <strong>{label}</strong>
-            <span>{faceoffHint(elim.phase)}</span>
           </div>
+          <p className="faceoff-blurb" data-testid="phase-blurb">
+            <span className="faceoff-choose">{copy.choose}</span> {copy.about}
+          </p>
           <div className="faceoff-pair">
             <FaceoffSide songId={open.a} hotkey="1" onPick={() => onChoose(open.key, open.a)} />
             <FaceoffSide songId={open.b} hotkey="2" onPick={() => onChoose(open.key, open.b)} />
           </div>
+        </section>
+      )}
+      {helpOpen && (
+        <section className="elim-help" data-testid="bracket-help" aria-label="How this works">
+          <p>Every tap is the song you like more. The app turns those picks into your favorite, your top 10, your least favorite, and your bottom 10.</p>
+          <ul>
+            {guide.map((item) => {
+              const current = elim.pool.length <= 20 && elim.phase === "winners" ? "playoff" : elim.phase;
+              return (
+              <li key={item.id} className={item.id === current ? "is-now" : ""}>
+                <strong>{item.title}.</strong> {item.about}
+              </li>
+              );
+            })}
+          </ul>
         </section>
       )}
 
@@ -304,6 +324,14 @@ function ElimTree({
             Current match
           </button>
         )}
+        <button
+          type="button"
+          className={`b-tool ${helpOpen ? "is-on" : ""}`}
+          aria-expanded={helpOpen}
+          onClick={() => setHelpOpen((openHelp) => !openHelp)}
+        >
+          How this works
+        </button>
       </div>
 
       <div
@@ -402,18 +430,13 @@ function treeName(elim: ElimState, id: ElimTreeId): string {
   return "Bottom";
 }
 
-function faceoffHint(phase: ElimPhase): string {
-  if (phase === "bottom") return "Tap the song you like more. The other one drops along the line.";
-  if (phase === "losers") return "Second chance. Tap who should stay alive. They move along the line.";
-  return "Tap the winner. They move along the line into the next round.";
-}
-
 function FaceoffSide({ songId, hotkey, onPick }: { songId: string; hotkey: string; onPick: () => void }) {
   const song = requireSong(songId);
   return (
-    <button type="button" className="faceoff-side" onClick={onPick}>
+    <button type="button" className="faceoff-side" aria-label={`Like ${song.title} more`} onClick={onPick}>
       <img src={song.cover} alt="" width={64} height={64} draggable={false} />
       <span>
+        <span className="sr-only">Like this more. </span>
         <span className="faceoff-title">{song.title}</span>
         <span className="faceoff-album">{song.album}</span>
       </span>
@@ -503,8 +526,9 @@ function Slot({
     <>
       <img src={song.cover} alt="" width={28} height={28} draggable={false} />
       <span className="elim-name">
-        {winner && <span className="sr-only">{basement ? "Drops. " : "Winner. "}</span>}
-        {loser && <span className="sr-only">{basement ? "Stays. " : "Lost this match. "}</span>}
+        {playable && <span className="sr-only">Like this more. </span>}
+        {winner && <span className="sr-only">{basement ? "Drops toward least favorite. " : "Advances. "}</span>}
+        {loser && <span className="sr-only">{basement ? "You liked this more. " : "Does not advance. "}</span>}
         {song.title}
         {winner && <em>{basement ? "Drops" : "Advances"}</em>}
       </span>
@@ -512,7 +536,7 @@ function Slot({
   );
   if (playable) {
     return (
-      <button type="button" className={className} onClick={onPick}>
+      <button type="button" className={className} aria-label={`Like ${song.title} more`} onClick={onPick}>
         {body}
       </button>
     );
