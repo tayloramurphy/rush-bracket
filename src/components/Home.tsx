@@ -104,7 +104,7 @@ export function Home({ notice, saved, onStart, onResume, onDiscard }: HomeProps)
           <span>Rush</span> Bracket
         </h1>
         <p className="lede">
-          Nineteen records. No live albums, no compilations. Find your favorite, your top 10, and the song you like least — then send the card to a friend.
+          Nineteen records. No live albums, no compilations. Always pick the song you like more. The app finds your favorite, your top 10, and the song that lands last — then you can send the card to a friend.
         </p>
       </header>
 
